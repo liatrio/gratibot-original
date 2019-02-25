@@ -1,4 +1,8 @@
-# Botkit Starter Kit for Slack Bots
+# Gratibot
+
+Gratibot is based off of HowdyAI's Botkit framework. We appreciate all the hardwork they have done to give us this framework to extend. 
+
+## Original README
 
 This repo contains everything you need to get started building a Slack bot with [Botkit](https://botkit.ai).
 
