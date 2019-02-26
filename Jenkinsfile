@@ -3,6 +3,7 @@ pipeline {
 
     stages {
         stage('test') {
+            environment { HOME="." }
             agent { 
                 docker { image 'node:10.15-alpine' }
             }
