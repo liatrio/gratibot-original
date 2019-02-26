@@ -4,7 +4,8 @@
   "description": "A bot to help acknowledge fellow team members' acheivements",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "test": "mocha --recursive"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -20,7 +21,18 @@
     "wordfilter": "^0.2.6",
     "hoek": ">=4.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "botkit-mock": "^0.1.11",
+    "eslint": "^5.14.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "mocha": "^6.0.2",
+    "mocha-eslint": "^5.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/liatrio/gratibot.git"
