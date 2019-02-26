@@ -6,21 +6,7 @@ Module for defining help command for Gratibot.
 
 module.exports = function(controller) {
 
-    /* Collect some very simple runtime stats for use in the uptime/debug command */
-    var stats = {
-        triggers: 0,
-        convos: 0,
-    }
-
-    controller.on('heard_trigger', function() {
-        stats.triggers++;
-    });
-
-    controller.on('conversationStarted', function() {
-        stats.convos++;
-    });
-
-    controller.hears(['help'], 'direct_message,direct_mention,ambient', (bot, message) => {
+    controller.hears(['help'], 'direct_message,direct_mention', (bot, message) => {
         bot.reply(message, {
           attachments: [
             {
