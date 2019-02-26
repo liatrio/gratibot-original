@@ -53,10 +53,10 @@ pipeline {
     }
     post {
         regression {
-            slackSend channel: "#${env.SLACK_CHANNEL}",  color: "danger", message: "Build failed: ${env.JOB_NAME} on build #${env.BUILD_NUMBER} (<${env.BUILD_URL}|go there>)"
+            slackSend channel: "#${env.SLACK_CHANNEL}",  color: "danger", message: "Build regression: ${env.JOB_NAME} on build #${env.BUILD_NUMBER} (<${env.BUILD_URL}|go there>)"
         }
         fixed {
-            slackSend channel: "#${env.SLACK_CHANNEL}", color: "good",  message: "Build back to success: ${env.JOB_NAME} on #${env.BUILD_NUMBER}"
+            slackSend channel: "#${env.SLACK_CHANNEL}", color: "good",  message: "Build recovered: ${env.JOB_NAME} on #${env.BUILD_NUMBER}"
         }
     }
 }
