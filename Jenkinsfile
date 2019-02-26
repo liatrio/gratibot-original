@@ -12,9 +12,23 @@ pipeline {
                 sh 'npm test'
             }
         }
-        stage('Build image and push to registry') {
+        stage('Build image') {
+            environment {
+                IMAGE='gratibot'
+            }
             steps {
-                echo 'placeholder for later builds'
+                sh 'docker build --pull -t ${IMAGE}:$(git rev-parse --short=10 HEAD) -t ${IMAGE}:latest .'
+            }
+        }
+        stage('Publish image') {
+            when { 
+                branch 'master'
+            }
+            steps {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]) {
+                    sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
+                    sh "docker push ${env.IMAGE}:\$(git rev-parse --short=10 HEAD)"
+                }
             }
         }
         stage('Preprod environment deploy') {
