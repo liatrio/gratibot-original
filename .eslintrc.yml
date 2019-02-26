@@ -8,4 +8,7 @@ globals:
   SharedArrayBuffer: readonly
 parserOptions:
   ecmaVersion: 2018
-rules: {}
+rules: 
+  "mocha/no-exclusive-tests": "error"
+plugins: 
+  - mocha
