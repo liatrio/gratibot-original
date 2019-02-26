@@ -39,9 +39,9 @@ pipeline {
             }
             steps {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]) {
-                    sh "echo ${env.dockerPassword} | docker login -u ${env.dockerUsername} --password-stdin"
+                    sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
                     sh "docker push ${IMAGE}:${GIT_COMMIT[0..10]}"
-                    sh "docker push ${IMAGE}:latest"
+                    sh "docker push ${IMAGE}:lastest"
                 }
             }
         }
