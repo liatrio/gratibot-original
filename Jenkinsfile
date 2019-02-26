@@ -2,6 +2,7 @@ pipeline {
     agent none 
     environment {
         IMAGE='gratibot'
+        SLACK_CHANNEL="flywheel"
     }
 
     stages {
@@ -46,6 +47,14 @@ pipeline {
             steps {
                 echo 'placeholder for prod deployment'
             }
+        }
+    }
+    post {
+        failure {
+            slackSend channel: "#${env.SLACK_CHANNEL}",  message: "Build failed: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|go there>)"
+        }
+        fixed {
+            slackSend channel: "#${env.SLACK_CHANNEL}",  message: "Build back to success: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
         }
     }
 }
