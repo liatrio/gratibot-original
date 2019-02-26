@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE='liatrio/gratibot'
-        TAG='$(git rev-parse --short=10 HEAD)'
+        TAG=''
     }
     stages {
         stage('test') {
@@ -14,11 +14,13 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm test'
+                sh 'export TAG=$(git rev-parse --short=10 HEAD)'
                 sh 'printenv'
             }
         }
         stage('Build image') {
             steps {
+                sh 'printenv'
                 sh 'docker build --pull -t ${IMAGE}:$(git rev-parse --short=10 HEAD) -t ${IMAGE}:latest .'
             }
         }
