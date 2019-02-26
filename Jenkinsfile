@@ -12,8 +12,15 @@ pipeline {
             }
         }
         stage('Build image and push to registry') {
+            environment {
+                IMAGE='gratibot'
+            }
             steps {
-                echo 'placeholder for later builds'
+                script {
+                    gitCommitHash = (git rev-parse HEAD) | awk '{print substr($0,0,10)}'
+                    export TAG=gitCommitHash
+                    docker build -t --pull ${IMAGE}:$TAG .
+                }
             }
         }
         stage('preprod') {
