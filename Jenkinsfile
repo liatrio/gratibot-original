@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE='gratibot'
+        IMAGE='liatrio/gratibot'
+        TAG='$(git rev-parse --short=10 HEAD)'
     }
     stages {
         stage('test') {
@@ -13,6 +14,7 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm test'
+                sh 'printenv'
             }
         }
         stage('Build image') {
