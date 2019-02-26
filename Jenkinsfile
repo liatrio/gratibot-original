@@ -3,6 +3,7 @@ pipeline {
 
     stages {
         stage('test') {
+            environment { HOME="." }
             agent { 
                 docker { image 'node:10.15-alpine' }
             }
@@ -30,12 +31,12 @@ pipeline {
                 }
             }
         }
-        stage('preprod') {
+        stage('Preprod environment deploy') {
             steps {
                 echo 'placeholder for preprod deployment'
             }
         }
-        stage('preprod') {
+        stage('Prod environment deploy') {
             steps {
                 echo 'placeholder for prod deployment'
             }
