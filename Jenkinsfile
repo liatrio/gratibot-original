@@ -16,10 +16,7 @@ pipeline {
                 IMAGE='gratibot'
             }
             steps {
-                script {
-                    export TAG=$(git rev-parse --short=10 HEAD)
-                    docker build --pull -t ${IMAGE}:${TAG} 
-                }
+                sh 'docker build --pull -t ${IMAGE}:$(git rev-parse --short=10 HEAD) -t ${IMAGE}:latest .'
             }
         }
         stage('preprod') {
