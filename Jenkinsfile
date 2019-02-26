@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE='gratibot'
+        TAG=''
+    }
     stages {
         stage('test') {
             environment { HOME="." }
@@ -13,11 +17,10 @@ pipeline {
             }
         }
         stage('Build image') {
-            environment {
-                IMAGE='gratibot'
-            }
             steps {
-                sh 'docker build --pull -t ${IMAGE}:$(git rev-parse --short=10 HEAD) -t ${IMAGE}:latest .'
+                sh 'TAG=$(git rev-parse --short=10 HEAD)'
+                sh 'echo $TAG && echo ${env.TAG}'
+                sh 'docker build --pull -t ${IMAGE}:${TAG} -t ${IMAGE}:latest .'
             }
         }
         stage('Publish image') {
