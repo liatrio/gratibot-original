@@ -1,0 +1,16 @@
+version: '2.2'
+services:
+  gratibot:
+    image: gratibot
+    ports:
+      - 3000:3000
+    build: .
+    environment:
+      mongodbUri: mongodb:27017/gratibot
+  mongodb:
+    image: mongo:3.6
+    volumes:
+      - mongo_data:/data/db
+volumes:
+  mongo_data:
+    driver: local
