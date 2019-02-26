@@ -17,9 +17,8 @@ pipeline {
             }
             steps {
                 script {
-                    gitCommitHash = (git rev-parse HEAD) | awk '{print substr($0,0,10)}'
-                    export TAG=gitCommitHash
-                    docker build -t --pull ${IMAGE}:$TAG .
+                    export TAG=$(git rev-parse --short=10 HEAD)
+                    docker build --pull -t ${IMAGE}:${TAG} 
                 }
             }
         }
