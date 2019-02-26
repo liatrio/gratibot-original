@@ -2,6 +2,7 @@ env:
   commonjs: true
   es6: true
   node: true
+  mocha: true
 extends: airbnb-base
 globals:
   Atomics: readonly
@@ -10,5 +11,8 @@ parserOptions:
   ecmaVersion: 2018
 rules: 
   "mocha/no-exclusive-tests": "error"
+  "chai-friendly/no-unused-expressions": 2
+  "no-unused-expressions": 0
 plugins: 
   - mocha
+  - chai-friendly
