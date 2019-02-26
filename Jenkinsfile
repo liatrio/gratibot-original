@@ -1,10 +1,10 @@
 pipeline {
     agent none 
+
     environment {
-        IMAGE='gratibot'
+        IMAGE='liatrio/gratibot'
         SLACK_CHANNEL="flywheel"
     }
-
     stages {
         stage('Unit test') {
             environment { HOME="." }
@@ -14,6 +14,8 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm test'
+                sh 'export TAG=$(git rev-parse --short=10 HEAD)'
+                sh 'printenv'
             }
         }
         stage('Build image') {
