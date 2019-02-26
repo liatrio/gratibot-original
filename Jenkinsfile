@@ -1,9 +1,10 @@
 pipeline {
     agent none 
-    environment {
-        IMAGE='gratibot'
-    }
 
+    environment {
+        IMAGE='liatrio/gratibot'
+        SLACK_CHANNEL="flywheel"
+    }
     stages {
         stage('Unit test') {
             environment { HOME="." }
@@ -46,6 +47,14 @@ pipeline {
             steps {
                 echo 'placeholder for prod deployment'
             }
+        }
+    }
+    post {
+        regression {
+            slackSend channel: "#${env.SLACK_CHANNEL}",  color: "danger", message: "Build regression: ${env.JOB_NAME} on build #${env.BUILD_NUMBER} (<${env.BUILD_URL}|go there>)"
+        }
+        fixed {
+            slackSend channel: "#${env.SLACK_CHANNEL}", color: "good",  message: "Build recovered: ${env.JOB_NAME} on #${env.BUILD_NUMBER}"
         }
     }
 }
