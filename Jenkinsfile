@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         IMAGE='gratibot'
-        TAG=''
     }
     stages {
         stage('test') {
@@ -18,9 +17,7 @@ pipeline {
         }
         stage('Build image') {
             steps {
-                sh 'TAG=$(git rev-parse --short=10 HEAD)'
-                sh 'echo $TAG && echo ${env.TAG}'
-                sh 'docker build --pull -t ${IMAGE}:${TAG} -t ${IMAGE}:latest .'
+                sh 'docker build --pull -t ${IMAGE}:$(git rev-parse --short=10 HEAD) -t ${IMAGE}:latest .'
             }
         }
         stage('Publish image') {
