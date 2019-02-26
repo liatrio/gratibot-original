@@ -1,12 +1,8 @@
 pipeline {
     agent none 
-    environment {
-        IMAGE='gratibot'
-    }
 
     environment {
         IMAGE='liatrio/gratibot'
-        TAG=''
     }
     stages {
         stage('Unit test') {
