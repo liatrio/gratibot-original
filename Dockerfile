@@ -3,7 +3,7 @@ WORKDIR /app
 ENV PORT 3000
 
 # handle dependencies
-COPY package.json .
+COPY package*.json ./
 RUN npm install --prod
 
 # copy source
