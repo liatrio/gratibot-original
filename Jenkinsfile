@@ -14,8 +14,6 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm test'
-                sh 'export TAG=$(git rev-parse --short=10 HEAD)'
-                sh 'printenv'
             }
         }
         stage('Build image') {
