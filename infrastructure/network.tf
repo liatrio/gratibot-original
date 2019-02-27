@@ -62,3 +62,19 @@ resource "aws_route_table_association" "private" {
   subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
   route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
 }
+
+data "aws_route53_zone" "domain" {
+  name = "${var.domain}"
+}
+
+resource "aws_route53_record" "gratibot" {
+  zone_id = "${data.aws_route53_zone.domain.zone_id}"
+  name    = "dev.gratibot.liatr.io"
+  type    = "A"
+
+  alias {
+    name                   = "${aws_alb.main.dns_name}"
+    zone_id                = "${aws_alb.main.zone_id}"
+    evaluate_target_health = true
+  }
+}
