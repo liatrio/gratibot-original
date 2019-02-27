@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const Botmock = require('botkit-mock');
-const descriptionSkill = require('../../skills/description.js');
+const descriptionSkill = require('../../skills/recognize.js');
 
 describe('description skill', () => {
   describe('hears description as ambient', () => {
@@ -12,14 +12,68 @@ describe('description skill', () => {
           channel: 'bar',
           messages: [
             {
-              text: 'Give :toast: @jon because because because because because',
+              text: 'Give :toast: <@FOO> because because because because because',
               isAssertion: true,
             },
           ],
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Awesome, :toast: given to ');
+        expect(message.text).to.equal('Awesome! Giving 1 :toast: to <@FOO>');
+      });
+    });
+    it('should give toast to multiple users', function testToast() {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: to <@FOO> and <@BAR> because because because because because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Awesome! Giving 1 :toast: to <@FOO>,<@BAR>');
+      });
+    });
+    it('should give multiple toast to multiple users', function testToast() {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: :toast: to <@FOO> and <@BAR> because because because because because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Awesome! Giving 2 :toast: to <@FOO>,<@BAR>');
+      });
+    });
+    it('should give multiple toast to single user', function testToast() {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: :toast: to <@FOO> because because because because because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Awesome! Giving 2 :toast: to <@FOO>');
       });
     });
     it('should ask for reason', function testToast() {
@@ -30,14 +84,14 @@ describe('description skill', () => {
           channel: 'bar',
           messages: [
             {
-              text: 'Give :toast: @jon',
+              text: 'Give :toast: <@FOO>',
               isAssertion: true,
             },
           ],
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Why is  deserving of :toast: ?');
+        expect(message.text).to.equal('Why is <@FOO> deserving of :toast: ?');
       });
     });
     it('should not do anything', function testToast() {
@@ -66,7 +120,7 @@ describe('description skill', () => {
           channel: 'bar',
           messages: [
             {
-              text: 'Give :toast: @jon because',
+              text: 'Give :toast: <@FOO> because',
             },
             {
               text: 'Because',
@@ -87,7 +141,7 @@ describe('description skill', () => {
           channel: 'bar',
           messages: [
             {
-              text: 'Give :toast: @jon',
+              text: 'Give :toast: <@FOO>',
             },
             {
               text: 'Because foo bar Because foo bar Because foo bar ',
@@ -97,7 +151,7 @@ describe('description skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Awesome! Giving :toast: to ');
+        expect(message.text).to.equal('Awesome! Giving 1 :toast: to <@FOO>');
       });
     });
   });
