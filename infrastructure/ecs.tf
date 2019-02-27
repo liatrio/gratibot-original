@@ -3,7 +3,7 @@
 #
 
 resource "aws_ecs_cluster" "main" {
-  name = "bots-ecs-cluster"
+  name = "gratibot-cluster"
 }
 
 resource "aws_ecs_task_definition" "gratibot" {
@@ -19,7 +19,7 @@ resource "aws_ecs_task_definition" "gratibot" {
       "cpu": ${var.fargate_cpu},
       "image": "${var.app_image}",
       "memory": ${var.fargate_memory},
-      "name": "app",
+      "name": "gratibot",
       "networkMode": "awsvpc",
       "portMappings": [
         {
@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "gratibot" {
 }
 
 resource "aws_ecs_service" "main" {
-  name            = "tf-ecs-service"
+  name            = "gratibot-service"
   cluster         = "${aws_ecs_cluster.main.id}"
   task_definition = "${aws_ecs_task_definition.gratibot.arn}"
   desired_count   = "${var.app_count}"

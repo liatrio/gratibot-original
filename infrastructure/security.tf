@@ -3,7 +3,7 @@
 #
 
 resource "aws_security_group" "lb" {
-  name        = "bots-ecs-alb"
+  name        = "tf-ecs-alb"
   description = "controls access to the ALB"
   vpc_id      = "${aws_vpc.main.id}"
 
@@ -23,7 +23,7 @@ resource "aws_security_group" "lb" {
 }
 
 resource "aws_security_group" "ecs_tasks" {
-  name        = "bots-ecs-tasks"
+  name        = "tf-ecs-tasks"
   description = "allow inbound access from the ALB only"
   vpc_id      = "${aws_vpc.main.id}"
 
