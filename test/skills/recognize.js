@@ -54,7 +54,7 @@ describe('recognize skill', () => {
           channel: 'random',
           messages: [
             {
-              text: '<@BOB> gets :toast:',
+              text: '<@BOB> gets :toast: because he is doing very well at his job today',
               isAssertion: true,
             },
           ],
@@ -62,8 +62,8 @@ describe('recognize skill', () => {
       ];
 
       return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Awesome! Giving 1 :toast: to <@BOB>');
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
       });
     });
 
@@ -75,7 +75,7 @@ describe('recognize skill', () => {
           channel: 'random',
           messages: [
             {
-              text: '<@BOB> gets :toast: :toast:',
+              text: '<@BOB> gets :toast: :toast: because he is doing a great job tracking issues today.',
               isAssertion: true,
             },
           ],
@@ -84,7 +84,7 @@ describe('recognize skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
+        expect(message.text).to.equal('Awesome! Giving 2 :toast: to <@BOB>');
       });
     });
 
@@ -96,7 +96,7 @@ describe('recognize skill', () => {
           channel: 'random',
           messages: [
             {
-              text: '<@BOB> <@CAROL> gets :toast: :toast:',
+              text: '<@BOB> <@CAROL> gets :toast: :toast: because they are doing a great job pairing today',
               isAssertion: true,
             },
           ],
@@ -105,7 +105,7 @@ describe('recognize skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
+        expect(message.text).to.equal('Awesome! Giving 2 :toast: to <@BOB>,<@CAROL>');
       });
     });
   });

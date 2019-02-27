@@ -39,7 +39,40 @@ function countEmojis(messageText) {
   return (messageText.match(emojiRegex) || []).length;
 }
 
-module.exports = function (controller) {
+function trimLength(message, emojii) {
+  const removeEmoji = new RegExp(emojii, 'g');
+  let fullMessage = message.text;
+  // Strips users _ emoji out of message
+  fullMessage = fullMessage.replace(/(\s)+(<.*?>)|(<.*?>)(\s)+/g, '');
+  fullMessage = fullMessage.replace(removeEmoji, '');
+  return fullMessage;
+}
+
+function getUsers(message) {
+  const fullMessage = message.text;
+  const catchUsers = fullMessage.match(/<.*?>/g);
+  const uniqueUsers = [...new Set(catchUsers)];
+  return uniqueUsers;
+}
+
+module.exports = function listener(controller) {
+  function doSuccess(newConvo, users, bot, count, printEmoji, uniqueUser, message, tags) {
+    newConvo.say({ ephemeral: true, text: `Awesome! Giving ${count} ${printEmoji} to ${uniqueUser}` });
+    users.forEach((u) => {
+      [...Array(count)].forEach(() => {
+        // TODO: call service to write recognition to DB
+        console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
+      });
+      // TODO: add the new balance to the message
+      bot.say({
+        text: `You just got recognized by <@${message.user}> in <#${message.channel}>!\n>>>${message.text}`,
+        channel: u,
+      });
+    });
+    // TODO: add # left to give for today in the whisper below
+    bot.whisper(message, 'Your recognition has been sent.  Well done!');
+  }
+
   controller.hears([emoji], 'ambient', (bot, message) => {
     const count = countEmojis(message.text);
     const users = extractUsers(message.text);
@@ -66,20 +99,22 @@ module.exports = function (controller) {
     }
 
 
-    users.forEach((u) => {
-      [...Array(count)].forEach(() => {
-        // TODO: call service to write recognition to DB
-        console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
-      });
-
-      // TODO: add the new balance to the message
-      bot.say({
-        text: `You just got recognized by <@${message.user}> in <#${message.channel}>!\n>>>${message.text}`,
-        channel: u,
-      });
+    const trimmedMessage = trimLength(message, emoji);
+    const uniqueUser = getUsers(message);
+    bot.startConversation(message, (err, convo) => {
+      if (trimmedMessage.length < 40) {
+        convo.ask({ ephemeral: true, text: `Why is ${uniqueUser} deserving of ${emoji} ?` }, (response, newConvo) => {
+          if (response.text.length < 40) {
+            newConvo.say({ ephemeral: true, text: `Distributing ${emoji} requires a description greater than 40 characters. Please try again` });
+            newConvo.next();
+          } else {
+            doSuccess(newConvo, users, bot, count, emoji, uniqueUser, message, tags);
+            newConvo.next();
+          }
+        });
+      } else {
+        doSuccess(convo, users, bot, count, emoji, uniqueUser, message, tags);
+      }
     });
-
-    // TODO: add # left to give for today in the whisper below
-    bot.whisper(message, 'Your recognition has been sent.  Well done!');
   });
 };
