@@ -68,13 +68,13 @@ data "aws_route53_zone" "domain" {
 }
 
 resource "aws_route53_record" "gratibot" {
-  zone_id = "${data.aws_route53_zone.domain.zone_id}"  
-  name = "dev.gratibot.liatr.io"
-  type = "A"
+  zone_id = "${data.aws_route53_zone.domain.zone_id}"
+  name    = "dev.gratibot.liatr.io"
+  type    = "A"
 
   alias {
-    name = "${aws_alb.main.dns_name}"
-    zone_id = "${aws_alb.main.zone_id}"
+    name                   = "${aws_alb.main.dns_name}"
+    zone_id                = "${aws_alb.main.zone_id}"
     evaluate_target_health = true
   }
 }
