@@ -6,7 +6,6 @@ const emoji = process.env.EMOJI || ':toast:';
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
 const emojiRegex = new RegExp(emoji, 'g');
-const desc = require('../libs/funcs.js');
 
 /*
   messageText: a raw slack message to parse
@@ -38,6 +37,22 @@ function extractTags(messageText) {
 */
 function countEmojis(messageText) {
   return (messageText.match(emojiRegex) || []).length;
+}
+
+function trimLength(message, emojii) {
+  const removeEmoji = new RegExp(emojii, 'g');
+  let fullMessage = message.text;
+  // Strips users _ emoji out of message
+  fullMessage = fullMessage.replace(/(\s)+(<.*?>)|(<.*?>)(\s)+/g, '');
+  fullMessage = fullMessage.replace(removeEmoji, '');
+  return fullMessage;
+}
+
+function getUsers(message) {
+  const fullMessage = message.text;
+  const catchUsers = fullMessage.match(/<.*?>/g);
+  const uniqueUsers = [...new Set(catchUsers)];
+  return uniqueUsers;
 }
 
 module.exports = function listener(controller) {
@@ -84,8 +99,8 @@ module.exports = function listener(controller) {
     }
 
 
-    const trimmedMessage = desc.trimLength(message, emoji);
-    const uniqueUser = desc.getUsers(message);
+    const trimmedMessage = trimLength(message, emoji);
+    const uniqueUser = getUsers(message);
     bot.startConversation(message, (err, convo) => {
       if (trimmedMessage.length < 40) {
         convo.ask({ ephemeral: true, text: `Why is ${uniqueUser} deserving of ${emoji} ?` }, (response, newConvo) => {
