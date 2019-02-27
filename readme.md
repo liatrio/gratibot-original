@@ -13,8 +13,7 @@ If you don't already have a Slack app for testing/development create a new one
 Run bot locally and expose port
 1. Clone project `git clone https://github.com/liatrio/gratibot.git`
 2. Edit .env file and add the client ID, client secret from the Slack app you create and set port to 3000
-3. Build Docker image `docker build -t gratibot .`
-4. Run Docker container `docker run -p 3000:3000 --name gratibot gratibot`
+3. Start docker containers `docker-compose up --build`
 5. Start ngrok `ngrok http 3000`
 
 Configure the follow Slack app features settings under each menu item
