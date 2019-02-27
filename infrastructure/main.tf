@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "chatbot-tfstates"
+    bucket = "slackbots-tfstates"
     key    = "state/gratibot.tfstate"
     region = "us-east-1"
   }

@@ -14,7 +14,7 @@ variable "az_count" {
 
 variable "app_image" {
   description = "Docker image to run in the ECS cluster"
-  default     = "liatrio/gratibot:latest"
+  default     = "docker.io/liatrio/gratibot:latest"
 }
 
 variable "app_port" {
