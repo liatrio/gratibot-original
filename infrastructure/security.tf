@@ -3,7 +3,7 @@
 #
 
 resource "aws_security_group" "lb" {
-  name        = "tf-ecs-alb"
+  name        = "bots-ecs-alb"
   description = "controls access to the ALB"
   vpc_id      = "${aws_vpc.main.id}"
 
@@ -15,15 +15,15 @@ resource "aws_security_group" "lb" {
   }
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_security_group" "ecs_tasks" {
-  name        = "tf-ecs-tasks"
+  name        = "bots-ecs-tasks"
   description = "allow inbound access from the ALB only"
   vpc_id      = "${aws_vpc.main.id}"
 
@@ -41,4 +41,3 @@ resource "aws_security_group" "ecs_tasks" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-

@@ -3,11 +3,11 @@
 #
 
 resource "aws_ecs_cluster" "main" {
-  name = "tf-ecs-cluster"
+  name = "bots-ecs-cluster"
 }
 
-resource "aws_ecs_task_definition" "app" {
-  family                   = "app"
+resource "aws_ecs_task_definition" "gratibot" {
+  family                   = "gratibot"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "${var.fargate_cpu}"
@@ -35,7 +35,7 @@ resource "aws_ecs_task_definition" "app" {
 resource "aws_ecs_service" "main" {
   name            = "tf-ecs-service"
   cluster         = "${aws_ecs_cluster.main.id}"
-  task_definition = "${aws_ecs_task_definition.app.arn}"
+  task_definition = "${aws_ecs_task_definition.gratibot.arn}"
   desired_count   = "${var.app_count}"
   launch_type     = "FARGATE"
 
@@ -46,7 +46,7 @@ resource "aws_ecs_service" "main" {
 
   load_balancer {
     target_group_arn = "${aws_alb_target_group.app.id}"
-    container_name   = "app"
+    container_name   = "gratibot"
     container_port   = "${var.app_port}"
   }
 

@@ -7,18 +7,14 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "aws_account_id" {
-  description = "AWS account ID"
-}
-
 variable "az_count" {
   description = "Number of AZs to cover in a given AWS region"
-  default     = "2"
+  default     = "1"
 }
 
 variable "app_image" {
   description = "Docker image to run in the ECS cluster"
-  default     = "adongy/hostname-docker:latest"
+  default     = "liatrio/gratibot:latest"
 }
 
 variable "app_port" {
@@ -28,7 +24,7 @@ variable "app_port" {
 
 variable "app_count" {
   description = "Number of docker containers to run"
-  default     = 2
+  default     = 1
 }
 
 variable "fargate_cpu" {
