@@ -1,12 +1,20 @@
 version: '2.2'
 services:
   gratibot:
+    container_name: gratibot
+    entrypoint: nodemon --watch service/lib --watch skills bot.js 
     image: gratibot
     ports:
       - 3000:3000
     build: .
     environment:
-      mongodbUri: mongodb:27017/gratibot
+      - debug
+      - mongodbUri=mongodb:27017/gratibot
+      - clientId
+      - clientSecret
+      - clientSigningSecret
+    volumes:
+      - .:/app
   mongodb:
     image: mongo:3.6
     volumes:
