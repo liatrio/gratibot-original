@@ -42,7 +42,7 @@ function countEmojis(messageText) {
 
 module.exports = function listener(controller) {
   function doSuccess(newConvo, users, bot, count, printEmoji, uniqueUser, message, tags) {
-    newConvo.say(`Awesome! Giving ${count} ${printEmoji} to ${uniqueUser}`);
+    newConvo.say({ ephemeral: true, text: `Awesome! Giving ${count} ${printEmoji} to ${uniqueUser}` });
     users.forEach((u) => {
       [...Array(count)].forEach(() => {
         // TODO: call service to write recognition to DB
@@ -88,9 +88,9 @@ module.exports = function listener(controller) {
     const uniqueUser = desc.getUsers(message);
     bot.startConversation(message, (err, convo) => {
       if (trimmedMessage.length < 40) {
-        convo.ask(`Why is ${uniqueUser} deserving of ${emoji} ?`, (response, newConvo) => {
+        convo.ask({ ephemeral: true, text: `Why is ${uniqueUser} deserving of ${emoji} ?` }, (response, newConvo) => {
           if (response.text.length < 40) {
-            newConvo.say(`Distributing ${emoji} requires a description greater than 40 characters. Please try again`);
+            newConvo.say({ ephemeral: true, text: `Distributing ${emoji} requires a description greater than 40 characters. Please try again` });
             newConvo.next();
           } else {
             doSuccess(newConvo, users, bot, count, emoji, uniqueUser, message, tags);
