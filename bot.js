@@ -144,5 +144,3 @@ function usage_tip() {
     console.log('Get Slack app credentials here: https://api.slack.com/apps')
     console.log('~~~~~~~~~~');
 }
-
-//restart container to run, run container without -d
