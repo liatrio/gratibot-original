@@ -19,6 +19,7 @@ resource "aws_ecs_task_definition" "gratibot" {
   [
     {
       "cpu": ${var.fargate_cpu},
+      "executionRoleArn": "${aws_iam_role.ecs_task_exectution.arn}",
       "image": "${var.app_image}",
       "memory": ${var.fargate_memory},
       "name": "gratibot",
