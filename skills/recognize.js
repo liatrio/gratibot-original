@@ -63,15 +63,6 @@ module.exports = function listener(controller) {
     newConvo.say({ ephemeral: true, text: `Awesome! Giving ${count} ${printEmoji} to ${uniqueUser}` });
     users.forEach((u) => {
 
-        bot.api.users.info({user: u}, function(err, response) {
-            let timezone = response.user.tz;
-
-            service.countRecognitionsGiven('casey',timezone,1).then( (response) => {
-                console.log('Daily Recog for case = ' + response);
-            });
-        });
-
-
       [...Array(count)].forEach(() => {
         // TODO: call service to write recognition to DB
         console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
@@ -90,6 +81,7 @@ module.exports = function listener(controller) {
     const count = countEmojis(message.text);
     const users = extractUsers(message.text);
     const tags = extractTags(message.text);
+    let recognizees = [];
 
     // make sure there was a mention in the message
     if (users.length === 0) {
@@ -112,22 +104,26 @@ module.exports = function listener(controller) {
     }
 
 
+    users.forEach((u) => {
+      bot.api.users.info({user: u}, function(err, response) {
+        recognizees.push(response.user.id);
+      });
+    });
+
     bot.api.users.info({user: message.user}, function(err, response) {
-      //console.log('Person timezone ' + response.user.tz);
-      //console.log('Person giving rec ' + response.user.name);
+      const recognizer = response.user.id;
       service.countRecognitionsGiven(response.user.id,response.user.tz,1).then( (response) => {
           if (response < 5)
           {
+              service.giveRecognition(recognizer, recognizees, 'great job with the thing!', '#flywheel', ['#excellence', '#energy']);
               console.log('should be valid and fine');
           }
           else
           {
               console.log('Should reject for daily limit reach');
           }
-
       });
     });
-
 
     const trimmedMessage = trimLength(message, emoji);
     const uniqueUser = getUsers(message);

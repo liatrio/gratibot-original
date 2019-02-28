@@ -150,12 +150,7 @@ let mongodb = require("./service/mongo.js");
 let service_obj = require("./service/");
 let service = new service_obj(mongodb);
 service.giveRecognition('justin', 'casey', 'great job with the thing!', '#flywheel', ['#excellence', '#energy']).then( (response) => {
-    console.log(response);
+    //console.log(response);
 });
 
-
-
 //restart container to run, run container without -d
-
-
-
