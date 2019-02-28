@@ -1,4 +1,5 @@
 const mongo = require('./mongo');
+const moment = require('moment-timezone');
 
 module.exports = {
   /**
@@ -39,7 +40,7 @@ module.exports = {
     let filter = {recognizee:user}
     if(undefined != days && days) {
       let date = Date.now() - 86400000 * days
-      filter.timestamp = 
+      filter.timestamp =
       {
         $gte: new Date(date)
       }
@@ -56,13 +57,15 @@ module.exports = {
   * @param {int} days Number of days to calculate count for
   * @return Promise which resolves to result from mongodb count query
   **/
-  countRecognitionsGiven: function(user, days) {
+  countRecognitionsGiven: function(user, timezone = null, days = null) {
     let filter = {recognizer:user}
-    if(undefined != days && days) {
-      let date = Date.now() - 86400000 * days
-      filter.timestamp = 
+    if(days && timezone) {
+      let userDate = moment(Date.now()).tz(timezone);
+      let midnight = userDate.startOf('day');
+      midnight = midnight.subtract(days - 1,'days');
+      filter.timestamp =
       {
-        $gte: new Date(date)
+        $gte: new Date(midnight)
       }
     }
     return mongo.recognition.count(filter).then( (response) => {
@@ -70,28 +73,6 @@ module.exports = {
       return response;
     });
   },
-
-  /**
-  * 
-  *
-  * @param {string} user Name of Slack user recognizing others
-  * @param {int} days Number of days to calculate count for
-  * @return Promise which resolves to result from mongodb count query
-  **/
-  /*
-  dailyRecognitions: function(user) {
-    let filter = {recognizer:user}
-    let date = Date.now() - (Date.now() % 86400000)
-    filter.timestamp = 
-    {
-      $gte: new Date(date)
-    }
-    return mongo.recognition.count(filter).then( (response) => {
-      console.log(response);
-      return response;
-    });
-  },
-  */
 
   /**
   * Calculate the score for the top users for this month.
@@ -113,7 +94,7 @@ module.exports = {
     * console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ' + count);
     * return response;
     });
-    **/ 
+    **/
     return Promise.resolve([{user: 'scribbles', score: 1000000}]); // TODO replace with promise which resolves to leaderboard data
   }
 }

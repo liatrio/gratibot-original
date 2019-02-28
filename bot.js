@@ -149,27 +149,8 @@ let service = require("./service/");
 service.giveRecognition('justin', 'casey', 'great job with the thing!', '#flywheel', ['#excellence', '#energy']).then( (response) => {
     console.log(response);
 });
-service.countRecognitionsReceived('casey', 1).then( (response) => {
-    console.log(response);
-});
-service.countRecognitionsReceived('justin').then( (response) => {
-    console.log(response);
-});
-service.countRecognitionsReceived('casey').then( (response) => {
-    console.log(response);
-});
-service.countRecognitionsGiven('casey', 1).then( (response) => {
-    console.log('casey given 1day '+response);
-});
-service.countRecognitionsGiven('justin').then( (response) => {
-    console.log('justin given '+response);
-});
-service.countRecognitionsGiven('casey').then( (response) => {
-    console.log('casey given '+response);
-});
-service.getLeaderboard('casey').then( (response) => {
-    console.log('casey docs '+response);
-});
+
+
 
 //restart container to run, run container without -d
 

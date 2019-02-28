@@ -2,7 +2,7 @@ version: '2.2'
 services:
   gratibot:
     container_name: gratibot
-    entrypoint: nodemon --watch service/lib --watch skills bot.js 
+    entrypoint: nodemon --watch service --watch skills bot.js 
     image: gratibot
     ports:
       - 3000:3000
