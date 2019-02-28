@@ -1,9 +1,17 @@
-//const mongo = require('./mongo');
-
 function service(mongodb) {
   this.mongodb = mongodb;
 }
 
+/**
+* Add recognition document to database
+*
+* @param {string} recognizer Name of Slack user giving recognition
+* @param {string} recognizee Name of Slack user receiving recognition
+* @param {string} message Slack message
+* @param {string} channel Slack channel the message was posted in
+* @param {array} values List of Liatrio values taged in message (#excellence)
+* @return Promise resolves to result from mongodb insert
+**/
 service.prototype.giveRecognition = function(recognizer, recognizee, message, channel, values) {
     //write in the current timestamp
     let timestamp = new Date();
@@ -22,8 +30,6 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
 }
 
 module.exports = service;
-
-
 
 //module.exports = {
 //var foo = {
@@ -54,6 +60,10 @@ module.exports = service;
 //      return response;
 //    });
 //  },
+=======
+//  --- We will be refactoring the code below to look like the code above ---
+//
+>>>>>>> 717b53ac36f1d50b52d9a9fdd6a859cc6c0c4228
 //  /**
 //  * Count the number of recognitions given to a user
 //  *
