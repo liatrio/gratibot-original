@@ -32,15 +32,15 @@ resource "aws_ecs_task_definition" "gratibot" {
       "secrets": [
         {
           "name": "clientId",
-          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:gratibot-slack-clientid"
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-clientid"
         },
         {
           "name": "clientSecret",
-          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:gratibot-client-secret"
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-client-secret"
         },
         {
           "name": "clientSigningSecret",
-          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:gratibot-slack-signing-secret"
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-signing-secret"
         }
       ]
     }
