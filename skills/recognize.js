@@ -2,6 +2,9 @@
 Module for detecting recognition
 */
 
+let mongodb = require("../service/mongo.js");
+let service_obj = require("../service/");
+let service = new service_obj(mongodb);
 const emoji = process.env.EMOJI || ':toast:';
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
@@ -59,6 +62,16 @@ module.exports = function listener(controller) {
   function doSuccess(newConvo, users, bot, count, printEmoji, uniqueUser, message, tags) {
     newConvo.say({ ephemeral: true, text: `Awesome! Giving ${count} ${printEmoji} to ${uniqueUser}` });
     users.forEach((u) => {
+
+        bot.api.users.info({user: u}, function(err, response) {
+            let timezone = response.user.tz;
+
+            service.countRecognitionsGiven('casey',timezone,1).then( (response) => {
+                console.log('Daily Recog for case = ' + response);
+            });
+        });
+
+
       [...Array(count)].forEach(() => {
         // TODO: call service to write recognition to DB
         console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
@@ -97,6 +110,23 @@ module.exports = function listener(controller) {
       });
       return;
     }
+
+
+    bot.api.users.info({user: message.user}, function(err, response) {
+      //console.log('Person timezone ' + response.user.tz);
+      //console.log('Person giving rec ' + response.user.name);
+      service.countRecognitionsGiven(response.user.id,response.user.tz,1).then( (response) => {
+          if (response < 5)
+          {
+              console.log('should be valid and fine');
+          }
+          else
+          {
+              console.log('Should reject for daily limit reach');
+          }
+
+      });
+    });
 
 
     const trimmedMessage = trimLength(message, emoji);

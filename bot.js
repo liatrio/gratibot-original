@@ -146,17 +146,15 @@ function usage_tip() {
 }
 
 //make sure to delete everything below this after testing!!!
-
 let mongodb = require("./service/mongo.js");
-//console.log(mongodb);
 let service_obj = require("./service/");
 let service = new service_obj(mongodb);
-
+>>>>>>> 7120d1c14ef2dd2c37aec9492c9ab33fda7587f9
 service.giveRecognition('justin', 'casey', 'great job with the thing!', '#flywheel', ['#excellence', '#energy']).then( (response) => {
     console.log(response);
 });
 
+<<<<<<< HEAD
 service.countRecognitionsReceived('casey', 3).then( (response) => {
     console.log(response);
 });
-
