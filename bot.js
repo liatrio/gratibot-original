@@ -145,10 +145,17 @@ function usage_tip() {
     console.log('~~~~~~~~~~');
 }
 
-let service = require("./service/");
+//let service = require("./service/");
+let mongodb = require("./service/mongo.js");
+console.log(mongodb);
+let service_obj = require("./service/");
+let service = new service_obj(mongodb);
+
 service.giveRecognition('justin', 'casey', 'great job with the thing!', '#flywheel', ['#excellence', '#energy']).then( (response) => {
     console.log(response);
 });
+
+/*
 service.countRecognitionsReceived('casey', 1).then( (response) => {
     console.log(response);
 });
@@ -170,6 +177,7 @@ service.countRecognitionsGiven('casey').then( (response) => {
 service.getLeaderboard('casey').then( (response) => {
     console.log('casey docs '+response);
 });
+*/
 
 //restart container to run, run container without -d
 
