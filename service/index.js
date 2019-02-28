@@ -1,5 +1,38 @@
-const mongo = require('./mongo');
 const moment = require('moment-timezone');
+
+function service(mongodb) {
+  this.mongodb = mongodb;
+}
+
+/**
+* Add recognition document to database
+*
+* @param {string} recognizer Name of Slack user giving recognition
+* @param {string} recognizee Name of Slack user receiving recognition
+* @param {string} message Slack message
+* @param {string} channel Slack channel the message was posted in
+* @param {array} values List of Liatrio values taged in message (#excellence)
+* @return Promise resolves to result from mongodb insert
+**/
+service.prototype.giveRecognition = function(recognizer, recognizee, message, channel, values) {
+    //write in the current timestamp
+    let timestamp = new Date();
+    return this.mongodb.recognition.insert(
+    {
+      recognizer: recognizer,
+      recognizee: recognizee,
+      timestamp: timestamp,
+      message: message,
+      channel: channel,
+      values: values
+    }).then( (response) => {
+      console.log(response);
+      return response;
+    });
+}
+
+module.exports = service;
+
 
 module.exports = {
   /**
@@ -97,4 +130,4 @@ module.exports = {
     **/
     return Promise.resolve([{user: 'scribbles', score: 1000000}]); // TODO replace with promise which resolves to leaderboard data
   }
-}
+

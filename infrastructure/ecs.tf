@@ -6,7 +6,11 @@ resource "aws_ecs_cluster" "main" {
   name = "gratibot-cluster"
 }
 
-data "aws_caller_identity" "current" { }
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_role" "ecs_task_execution" {
+  name = "ecsTaskExecutionRole"
+}
 
 resource "aws_ecs_task_definition" "gratibot" {
   family                   = "gratibot"
@@ -19,7 +23,7 @@ resource "aws_ecs_task_definition" "gratibot" {
   [
     {
       "cpu": ${var.fargate_cpu},
-      "executionRoleArn": "${aws_iam_role.ecs_task_exectution.arn}",
+      "executionRoleArn": "${data.aws_iam_role.ecs_task_execution.arn}"
       "image": "${var.app_image}",
       "memory": ${var.fargate_memory},
       "name": "gratibot",
