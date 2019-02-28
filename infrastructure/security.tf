@@ -57,7 +57,9 @@ resource "aws_iam_role" "ecs_task_exectution" {
         "ecr:GetDownloadUrlForLayer",
         "ecr:BatchGetImage",
         "logs:CreateLogStream",
-        "logs:PutLogEvents"
+        "logs:PutLogEvents",
+        "ssm:GetParameters",
+        "kms:Decrypt"
       ],
       "Resource": "*"
     }
