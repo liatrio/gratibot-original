@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 function service(mongodb) {
   this.mongodb = mongodb;
 }
@@ -29,41 +31,28 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
     });
 }
 
+service.prototype.countRecognitionsReceived = function(user, days) {
+    let filter = {recognizee:user}
+    if(undefined != days && days) {
+      let date = Date.now() - 86400000 * days
+      //get day starting from midnight using moment
+
+
+      filter.timestamp = 
+      {
+        $gte: start
+      }
+    }
+    return mongo.recognition.count(filter).then( (response) => {
+      console.log(response);
+      return response;
+    });
+}
+
 module.exports = service;
 
-//module.exports = {
-//var foo = {
-//  /**
-//  * Add recognition document to database
-//  *
-//  * @param {string} recognizer Name of Slack user giving recognition
-//  * @param {string} recognizee Name of Slack user receiving recognition
-//  * @param {string} message Slack message
-//  * @param {string} channel Slack channel the message was posted in
-//  * @param {array} values List of Liatrio values taged in message (#excellence)
-//  * @return Promise resolves to result from mongodb insert
-//  **/
-//  giveRecognition: function(recognizer, recognizee, message, channel, values) {
-//    //write in the current timestamp
-//    //return the promise that we get back from mongodb insert
-//    let timestamp = new Date();
-//    return mongo.recognition.insert(
-//    {
-//      recognizer: recognizer,
-//      recognizee: recognizee,
-//      timestamp: timestamp,
-//      message: message,
-//      channel: channel,
-//      values: values
-//    }).then( (response) => {
-//      console.log(response);
-//      return response;
-//    });
-//  },
-=======
 //  --- We will be refactoring the code below to look like the code above ---
 //
->>>>>>> 717b53ac36f1d50b52d9a9fdd6a859cc6c0c4228
 //  /**
 //  * Count the number of recognitions given to a user
 //  *
