@@ -145,7 +145,10 @@ function usage_tip() {
     console.log('~~~~~~~~~~');
 }
 
-let service = require("./service/");
+
+let mongodb = require("./service/mongo.js");
+let service_obj = require("./service/");
+let service = new service_obj(mongodb);
 service.giveRecognition('justin', 'casey', 'great job with the thing!', '#flywheel', ['#excellence', '#energy']).then( (response) => {
     console.log(response);
 });
