@@ -6,6 +6,8 @@ resource "aws_ecs_cluster" "main" {
   name = "gratibot-cluster"
 }
 
+data "aws_caller_identity" "current" { }
+
 resource "aws_ecs_task_definition" "gratibot" {
   family                   = "gratibot"
   network_mode             = "awsvpc"
@@ -25,6 +27,20 @@ resource "aws_ecs_task_definition" "gratibot" {
         {
           "containerPort": ${var.app_port},
           "hostPort": ${var.app_port}
+        }
+      ],
+      "secrets": [
+        {
+          "name": "clientId",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:gratibot-slack-clientid"
+        },
+        {
+          "name": "clientSecret",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:gratibot-client-secret"
+        },
+        {
+          "name": "clientSigningSecret",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:gratibot-slack-signing-secret"
         }
       ]
     }
