@@ -136,9 +136,6 @@ if (process.env.studio_token) {
 }
 
 
-
-
-
 function usage_tip() {
     console.log('~~~~~~~~~~');
     console.log('Botkit Starter Kit');
