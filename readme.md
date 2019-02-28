@@ -23,3 +23,15 @@ Configure the follow Slack app features settings under each menu item
 
 Connect bot to Slack
 1. Goto [https://NGROK_HOST:3000/](https://NGROK_HOST:3000/) and follow instructions to add bot to Slack.
+
+
+## AWS Manual/Admin Requirements 
+The infrastructure code cannot be set up without the appropriate security pieces in place include:
+* KMS key for the parameters
+* Parameter store set up for slack credentials (clientId, clientSecret, clientSigningSecret)
+* IAM Role to allow ECS task to utilize the parameters and key
+
+This can be done manually or via the `infra_admin` Terraform configuration. This must be run by someone with the ability to create roles, keys, and parameters. 
+
+For more information on the AWS Requirements check out [The ECS Docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html#secrets-create-taskdefinition)
+
