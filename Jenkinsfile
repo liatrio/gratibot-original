@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE='liatrio/gratibot'
         SLACK_CHANNEL="flywheel"
+        APP_DOMAIN='liatr.io'
     }
     stages {
         stage('Unit test') {
@@ -46,8 +47,21 @@ pipeline {
             }
         }
         stage('Preprod environment deploy') {
+            when {
+                branch 'master'
+            }
+            agent {
+                docker { image 'hashicorp/terraform:light' }
+            }
             steps {
-                echo 'placeholder for preprod deployment'
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-SVC-Jenkins-non-prod-dev' ]]) {
+                    sh """
+                    cd infrastructure
+                    terraform init -input=false -no-color -force-copy -reconfigure
+                    terraform plan -out=plan_nonprod_gratibot -input=false -no-color -var app_image=docker.io/${IMAGE}:${GIT_COMMIT[0..10]} -var domain=${APP_DOMAIN}
+                    terraform apply -input=false plan_nonprod_gratibot -no-color
+                    """
+                }
             }
         }
         stage('Prod environment deploy') {

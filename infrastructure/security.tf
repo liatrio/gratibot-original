@@ -1,0 +1,70 @@
+#
+# Security groups and configuration for gratibot
+#
+
+resource "aws_security_group" "lb" {
+  name        = "tf-ecs-alb"
+  description = "controls access to the ALB"
+  vpc_id      = "${aws_vpc.main.id}"
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "ecs_tasks" {
+  name        = "tf-ecs-tasks"
+  description = "allow inbound access from the ALB only"
+  vpc_id      = "${aws_vpc.main.id}"
+
+  ingress {
+    protocol        = "tcp"
+    from_port       = "${var.app_port}"
+    to_port         = "${var.app_port}"
+    security_groups = ["${aws_security_group.lb.id}"]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_iam_role" "ecs_task_exectution" {
+  name = "ecsTaskExecutionRole"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "ssm:GetParameters",
+        "kms:Decrypt"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+
+}
