@@ -44,6 +44,14 @@ resource "aws_ssm_parameter" "slack_client_signing_secret" {
   type        = "SecureString"
 }
 
+resource "aws_ssm_parameter" "mongo_db_string" {
+  name        = "gratibot-mongodb-string"
+  description = "mongo db instance for the gratibot app"
+  key_id      = "${aws_kms_key.gratibot.key_id}"
+  value       = "${var.mongo_db_string}"
+  type        = "SecureString"
+}
+
 resource "aws_iam_role" "ecs_task_execution" {
   name = "ecsTaskExecutionRole"
 

@@ -13,3 +13,7 @@ variable "slack_client_secret" {
 variable "slack_client_signing_secret" {
   description = "Variable for use when setting up params"
 }
+
+variable "mongo_db_string" {
+  description = "Variable for use when setting up params"
+}

@@ -22,35 +22,40 @@ resource "aws_ecs_task_definition" "gratibot" {
 
   container_definitions = <<DEFINITION
   [
-  {
-    "cpu": ${var.fargate_cpu},
-    "image": "${var.app_image}",
-    "memory": ${var.fargate_memory},
-    "name": "gratibot",
-    "networkMode": "awsvpc",
-    "portMappings": [
-      {
-        "containerPort": ${var.app_port},
-        "hostPort": ${var.app_port}
-      }
-    ],
-    "secrets": [
-      {
-        "name": "clientId",
-        "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-clientid"
-      },
-      {
-        "name": "clientSecret",
-        "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-client-secret"
-      },
-      {
-        "name": "clientSigningSecret",
-        "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-signing-secret"
-      }
-    ]
-  }
-]
-DEFINITION
+    {
+      "cpu": ${var.fargate_cpu},
+      "executionRoleArn": "${data.aws_iam_role.ecs_task_execution.arn}",
+      "image": "${var.app_image}",
+      "memory": ${var.fargate_memory},
+      "name": "gratibot",
+      "networkMode": "awsvpc",
+      "portMappings": [
+        {
+          "containerPort": ${var.app_port},
+          "hostPort": ${var.app_port}
+        }
+      ],
+      "secrets": [
+        {
+          "name": "clientId",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-clientid"
+        },
+        {
+          "name": "clientSecret",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-client-secret"
+        },
+        {
+          "name": "clientSigningSecret",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-signing-secret"
+        },
+        {
+          "name": "mongodbUri",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-mongodb-string"
+        }
+      ]
+    }
+  ]
+  DEFINITION
 }
 
 resource "aws_ecs_service" "main" {
