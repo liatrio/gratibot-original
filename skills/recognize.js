@@ -1,10 +1,6 @@
 /*
 Module for detecting recognition
 */
-
-let mongodb = require("../service/mongo.js");
-let service_obj = require("../service/");
-let service = new service_obj(mongodb);
 const emoji = process.env.EMOJI || ':toast:';
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
@@ -58,18 +54,18 @@ function getUsers(message) {
   return uniqueUsers;
 }
 
-module.exports = function listener(controller) {
+module.exports = function listener(controller, service) {
   function doSuccess(newConvo, users, bot, count, printEmoji, uniqueUser, message, tags) {
     newConvo.say({ ephemeral: true, text: `Awesome! Giving ${count} ${printEmoji} to ${uniqueUser}` });
     users.forEach((u) => {
-
       [...Array(count)].forEach(() => {
         // TODO: call service to write recognition to DB
-        console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
+        // console.log(`Recording recognition for ${u} from ${message.user}
+        // in channel ${message.channel} with tags ${tags}`);
       });
       // TODO: add the new balance to the message
       bot.say({
-        text: `You just got recognized by <@${message.user}> in <#${message.channel}>!\n>>>${message.text}`,
+        text: `You just got recognized by <@${message.user}> in <#${message.channel}>!\n>>>${message.text} with ${tags}`,
         channel: u,
       });
     });
@@ -81,7 +77,7 @@ module.exports = function listener(controller) {
     const count = countEmojis(message.text);
     const users = extractUsers(message.text);
     const tags = extractTags(message.text);
-    let recognizees = [];
+    const recognizees = [];
 
     // make sure there was a mention in the message
     if (users.length === 0) {
@@ -105,7 +101,7 @@ module.exports = function listener(controller) {
 
 
     users.forEach((u) => {
-      bot.api.users.info({user: u}, function(err, response) {
+      bot.api.users.info({user: u }, function getInfo(err, response) {
         recognizees.push(response.user.id);
       });
     });
@@ -113,9 +109,13 @@ module.exports = function listener(controller) {
     bot.api.users.info({user: message.user}, function(err, response) {
       const recognizer = response.user.id;
       service.countRecognitionsGiven(response.user.id,response.user.tz,1).then( (response) => {
-          if (response < 5)
+          if (response + recognizees.length <= 10)
           {
-              service.giveRecognition(recognizer, recognizees, 'great job with the thing!', '#flywheel', ['#excellence', '#energy']);
+            users.forEach((u) => {
+              bot.api.users.info({user: u}, function(err, response) {
+                service.giveRecognition(recognizer, response.user.id, 'great job with the thing!', '#flywheel', ['#excellence', '#energy']);
+              });
+            }); 
               console.log('should be valid and fine');
           }
           else
@@ -123,6 +123,7 @@ module.exports = function listener(controller) {
               console.log('Should reject for daily limit reach');
           }
       });
+      // });
     });
 
     const trimmedMessage = trimLength(message, emoji);
