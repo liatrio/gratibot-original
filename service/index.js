@@ -38,14 +38,16 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
 * @param {int} days Number of days to calculate count for
 * @return Promise which resolves to result from mongodb count query
 **/
-service.prototype.countRecognitionsReceived = function(user, days) {
+service.prototype.countRecognitionsReceived = function(user, timezone = null, days = null) {
   let filter = {recognizee:user}
-  if(undefined != days && days) {
-    let date = Date.now() - 86400000 * days
+  if(days && timezone) {
+    let userDate = moment(Date.now()).tz(timezone);
+    let midnight = userDate.startOf('day');
+    midnight = midnight.subtract(days - 1,'days');
     filter.timestamp =
-    {
-      $gte: new Date(date)
-    }
+      {
+        $gte: new Date(midnight)
+      }
   }
   return this.mongodb.recognition.count(filter).then( (response) => {
     console.log(response);
