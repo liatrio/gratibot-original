@@ -20,7 +20,7 @@ describe('description skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Awesome! Giving 1 :toast: to <@FOO>');
+        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
       });
     });
     it('should give toast to multiple users', function testToast() {
@@ -38,7 +38,7 @@ describe('description skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Awesome! Giving 1 :toast: to <@FOO>,<@BAR>');
+        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
       });
     });
     it('should give multiple toast to multiple users', function testToast() {
@@ -56,7 +56,7 @@ describe('description skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Awesome! Giving 2 :toast: to <@FOO>,<@BAR>');
+        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
       });
     });
     it('should give multiple toast to single user', function testToast() {
@@ -74,7 +74,7 @@ describe('description skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Awesome! Giving 2 :toast: to <@FOO>');
+        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
       });
     });
     it('should ask for reason', function testToast() {
@@ -92,7 +92,7 @@ describe('description skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Why is <@FOO> deserving of :toast: ?');
+        expect(message.text).to.equal('Please provide more details why you are giving :toast:');
       });
     });
     it('should not do anything', function testToast() {
@@ -113,7 +113,7 @@ describe('description skill', () => {
         expect(message.text).to.be.an('undefined');
       });
     });
-    it('Should reject reason less than 40 characters', function testToast() {
+    it('Should reject reason less than 20 characters', function testToast() {
       const sequence = [
         {
           type: 'ambient',
@@ -131,10 +131,10 @@ describe('description skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Distributing :toast: requires a description greater than 40 characters. Please try again');
+        expect(message.text).to.equal('Giving :toast: requires a description greater than 20 characters. Please try again');
       });
     });
-    it('Should accept reason greater than 40 characters', function testToast() {
+    it('Should accept reason greater than 20 characters', function testToast() {
       const sequence = [
         {
           type: 'ambient',
@@ -152,7 +152,7 @@ describe('description skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Awesome! Giving 1 :toast: to <@FOO>');
+        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
       });
     });
   });

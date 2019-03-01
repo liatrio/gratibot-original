@@ -1,147 +1,143 @@
 /*
 Module for detecting recognition
 */
+
 const emoji = process.env.EMOJI || ':toast:';
+const minLength = 20;
+const failImageURL = 'https://media0.giphy.com/media/ac7MA7r5IMYda/giphy-downsized.gif?cid=6104955e5c763d742e4f524832508da2';
+
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
 const emojiRegex = new RegExp(emoji, 'g');
 
-/*
-  messageText: a raw slack message to parse
+const extractUsers = (state) => {
+  state.users = state.message.text.match(userRegex);
 
-  returns
-    a list of users
-*/
-function extractUsers(messageText) {
-  return (messageText.match(userRegex) || [])
-    .map(user => user.slice(2, -1));
-}
-
-/*
-  messageText: a raw slack message to parse
-
-  returns
-    a list of tags
-*/
-function extractTags(messageText) {
-  return (messageText.match(tagRegex) || [])
-    .map(user => user.slice(1));
-}
-
-/*
-  messageText: a raw slack message to parse
-
-  returns
-    a count of the number of emojis in the message
-*/
-function countEmojis(messageText) {
-  return (messageText.match(emojiRegex) || []).length;
-}
-
-function trimLength(message, emojii) {
-  const removeEmoji = new RegExp(emojii, 'g');
-  let fullMessage = message.text;
-  // Strips users _ emoji out of message
-  fullMessage = fullMessage.replace(/(\s)+(<.*?>)|(<.*?>)(\s)+/g, '');
-  fullMessage = fullMessage.replace(removeEmoji, '');
-  return fullMessage;
-}
-
-function getUsers(message) {
-  const fullMessage = message.text;
-  const catchUsers = fullMessage.match(/<.*?>/g);
-  const uniqueUsers = [...new Set(catchUsers)];
-  return uniqueUsers;
-}
-
-module.exports = function listener(controller, service) {
-  function doSuccess(newConvo, users, bot, count, printEmoji, uniqueUser, message, tags) {
-    newConvo.say({ ephemeral: true, text: `Awesome! Giving ${count} ${printEmoji} to ${uniqueUser}` });
-    users.forEach((u) => {
-      [...Array(count)].forEach(() => {
-        // TODO: call service to write recognition to DB
-        // console.log(`Recording recognition for ${u} from ${message.user}
-        // in channel ${message.channel} with tags ${tags}`);
-      });
-      // TODO: add the new balance to the message
-      bot.say({
-        text: `You just got recognized by <@${message.user}> in <#${message.channel}>!\n>>>${message.text} with ${tags}`,
-        channel: u,
-      });
-    });
-    // TODO: add # left to give for today in the whisper below
-    bot.whisper(message, 'Your recognition has been sent.  Well done!');
+  // make sure there was a mention in the message
+  if (!state.users) {
+    return new Promise((resolve, reject) => state.bot.whisper(state.message, 'Forgetting something?  Try again...this time be sure to mention who you want to recognize with `@user`', reject));
   }
 
-  controller.hears([emoji], 'ambient', (bot, message) => {
-    const count = countEmojis(message.text);
-    const users = extractUsers(message.text);
-    const tags = extractTags(message.text);
-    const recognizees = [];
+  // pull out userid
+  state.users = state.users.map(user => user.slice(2, -1));
 
-    // make sure there was a mention in the message
-    if (users.length === 0) {
-      bot.whisper(message, 'Forgetting something?  Try again...this time be sure to mention who you want to recognize with `@user`');
-      return;
-    }
+  return state;
+};
 
-    // block giving recognition to myself
-    if (users.indexOf(message.user) >= 0) {
-      bot.reply(message, {
-        text: `Nice try <@${message.user}>`,
-        attachments: [
-          {
-            title: 'fail',
-            image_url: 'https://media0.giphy.com/media/ac7MA7r5IMYda/giphy-downsized.gif?cid=6104955e5c763d742e4f524832508da2',
-          },
-        ],
+const checkForSelfRecognition = (state) => {
+  // block giving recognition to myself
+  if (state.users.indexOf(state.message.user) >= 0) {
+    const reply = {
+      text: `Nice try <@${state.message.user}>`,
+      attachments: [
+        {
+          title: 'fail',
+          image_url: failImageURL,
+        },
+      ],
+    };
+    return new Promise(() => state.bot.reply(state.message, reply));
+  }
+
+  return state;
+};
+
+const checkMessageLength = (state) => {
+  // Strips users _ emoji out of message
+  state.full_message = state.message.text;
+  const trimmedMessage = state.full_message.replace(/\s*<.*?>\s*/g, '').replace(emojiRegex, '');
+
+  if (trimmedMessage.length < minLength) {
+    return new Promise((resolve, reject) => {
+      state.bot.startConversation(state.message, (err, convo) => {
+        convo.ask({ ephemeral: true, text: `Please provide more details why you are giving ${emoji}` }, (response, newConvo) => {
+          if (err) {
+            reject(err);
+          } else if (response.text.length < minLength) {
+            newConvo.next();
+            reject(new Error(`Giving ${emoji} requires a description greater than ${minLength} characters. Please try again`));
+          } else {
+            resolve(state);
+          }
+        });
       });
-      return;
-    }
+    });
+  }
 
+  return state;
+};
 
-    users.forEach((u) => {
-      bot.api.users.info({user: u }, function getInfo(err, response) {
+const sendRecognition = (state) => {
+  const { message } = state;
+  const count = (message.text.match(emojiRegex) || []).length;
+  const tags = (message.text.match(tagRegex) || []).map(tag => tag.slice(1));
+  const recognizees = [];
+
+  state.users.forEach((u) => {
+      state.bot.api.users.info({user: u }, function getInfo(err, response) {
         recognizees.push(response.user.id);
       });
     });
 
-    bot.api.users.info({user: message.user}, function(err, response) {
-      const recognizer = response.user.id;
-      service.countRecognitionsGiven(response.user.id,response.user.tz,1).then( (response) => {
-          if (response + recognizees.length <= 10)
-          {
-            users.forEach((u) => {
-              bot.api.users.info({user: u}, function(err, response) {
-                service.giveRecognition(recognizer, response.user.id, 'great job with the thing!', '#flywheel', ['#excellence', '#energy']);
+  state.users.forEach((u) => {
+    [...Array(count)].forEach(() => {
+      // TODO: call service to write recognition to DB
+      state.bot.api.users.info({user: message.user}, function(err, response) {
+        const recognizer = response.user.id;
+        state.service.countRecognitionsGiven(response.user.id,response.user.tz,1).then( (response) => {
+          if (response + recognizees.length <= 20) {
+            state.users.forEach((u) => {
+              state.bot.api.users.info({user: u}, function(err, response) {
+                state.service.giveRecognition(recognizer, response.user.id, state.full_message, '#flywheel', ['#excellence', '#energy']);
               });
-            }); 
-              console.log('should be valid and fine');
+            });
+            console.log('should be valid and fine');
           }
-          else
-          {
+          else {
               console.log('Should reject for daily limit reach');
           }
-      });
-      // });
-    });
-
-    const trimmedMessage = trimLength(message, emoji);
-    const uniqueUser = getUsers(message);
-    bot.startConversation(message, (err, convo) => {
-      if (trimmedMessage.length < 40) {
-        convo.ask({ ephemeral: true, text: `Why is ${uniqueUser} deserving of ${emoji} ?` }, (response, newConvo) => {
-          if (response.text.length < 40) {
-            newConvo.say({ ephemeral: true, text: `Distributing ${emoji} requires a description greater than 40 characters. Please try again` });
-            newConvo.next();
-          } else {
-            doSuccess(newConvo, users, bot, count, emoji, uniqueUser, message, tags);
-            newConvo.next();
-          }
         });
+      });
+      console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
+    });
+    // TODO: add the new balance to the message
+    state.bot.say({
+      text: `You just got recognized by <@${message.user}> in <#${message.channel}>!\n>>>${message.text}`,
+      channel: u,
+    });
+  });
+  return state;
+};
+
+const whisperReply = (state) => {
+  // TODO: add # left to give for today in the whisper below
+  const reply = 'Your recognition has been sent.  Well done!';
+
+  return new Promise((resolve, reject) => {
+    state.bot.whisper(state.message, reply, (err) => {
+      if (err) {
+        reject(err);
       } else {
-        doSuccess(convo, users, bot, count, emoji, uniqueUser, message, tags);
+        resolve(state);
       }
     });
+  });
+};
+
+module.exports = function listener(controller, service) {
+  controller.hears([emoji], 'ambient', (bot, message) => {
+    const statePromise = Promise.resolve({
+      bot,
+      message,
+      service,
+    });
+
+    return statePromise
+      .then(extractUsers)
+      .then(checkForSelfRecognition)
+      .then(checkMessageLength)
+      .then(sendRecognition)
+      .then(whisperReply)
+      .catch(error => bot.whisper(message, error.message));
   });
 };

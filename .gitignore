@@ -3,5 +3,6 @@
 node_modules
 components/routes/_*
 .sass-cache/*
-
+.nyc_output/
+coverage/
 **/.terraform/
