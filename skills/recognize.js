@@ -2,9 +2,6 @@
 Module for detecting recognition
 */
 
-let mongodb = require("../service/mongo.js");
-let service_obj = require("../service/");
-let service = new service_obj(mongodb);
 const emoji = process.env.EMOJI || ':toast:';
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
@@ -58,7 +55,7 @@ function getUsers(message) {
   return uniqueUsers;
 }
 
-module.exports = function listener(controller) {
+module.exports = function listener(controller, service) {
   function doSuccess(newConvo, users, bot, count, printEmoji, uniqueUser, message, tags) {
     newConvo.say({ ephemeral: true, text: `Awesome! Giving ${count} ${printEmoji} to ${uniqueUser}` });
     users.forEach((u) => {

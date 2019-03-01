@@ -1,7 +1,8 @@
 const { expect } = require('chai');
 const Botmock = require('botkit-mock');
 const rewire = require('rewire');
-const recognizeSkill = require('../../skills/recognize.js');
+//const recognizeSkill = require('../../skills/recognize.js');
+const ServiceObj = require('../../service');
 
 describe('recognize skill', () => {
   describe('hears emoji', () => {
@@ -115,16 +116,30 @@ describe('recognize skill', () => {
       debug: false,
     });
     this.bot = this.controller.spawn({ type: 'slack' });
-    recognizeSkill(this.controller);
+    const mongodb = {
+      recognition: {
+        insert: (document) => {
+          const response = document;
+          response[idField] = Math.random();
+          return Promise.resolve(response);
+        },
+        count: (document) => {
+          const response = Math.random();
+          return Promise.resolve(response);
+        },
+      },
+    };
+    const service = new ServiceObj(mongodb);
+    recognizeSkill(this.controller, service);
   });
   afterEach(function () {
     this.controller.shutdown();
   });
 });
 
-
+/*
 describe('recognize', () => {
-  const recognize = rewire('../../skills/recognize.js');
+  //const recognize = rewire('../../skills/recognize.js');
   describe('extractUsers', () => {
     const extractUsers = recognize.__get__('extractUsers');
 
@@ -173,3 +188,4 @@ describe('recognize', () => {
     });
   });
 });
+*/
