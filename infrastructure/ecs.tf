@@ -46,6 +46,10 @@ resource "aws_ecs_task_definition" "gratibot" {
         {
           "name": "clientSigningSecret",
           "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-signing-secret"
+        },
+        {
+          "name": "mongodbUri",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-mongodb-string"
         }
       ]
     }
