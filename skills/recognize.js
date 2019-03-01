@@ -63,7 +63,6 @@ const checkMessageLength = (state) => {
       });
     });
   }
-
   return state;
 };
 
@@ -71,47 +70,42 @@ const sendRecognition = (state) => {
   const { message } = state;
   const count = (message.text.match(emojiRegex) || []).length;
   const tags = (message.text.match(tagRegex) || []).map(tag => tag.slice(1));
-  const recognizees = [];
 
-  state.users.forEach((u) => {
-      state.bot.api.users.info({user: u }, function getInfo(err, response) {
-        recognizees.push(response.user.id);
-      });
-    });
-
-  state.users.forEach((u) => {
-    [...Array(count)].forEach(() => {
-      // TODO: call service to write recognition to DB
-      state.bot.api.users.info({user: message.user}, function(err, response) {
-        const recognizer = response.user.id;
-        state.service.countRecognitionsGiven(response.user.id,response.user.tz,1).then( (response) => {
-          if (response + recognizees.length <= 20) {
+  state.bot.api.users.info({user: message.user}, function(err, response) {
+    const recognizer = response.user.id;
+    const userTz = response.user.tz;
+    state.service.countRecognitionsGiven(recognizer,userTz,1).then ( (response) => {
+      const numberGiven = response;
+      //state.users.forEach((u) => {
+       //[...Array(count)].forEach(() => {
+          if (numberGiven + (state.users.length * count) <= 5) {
             state.users.forEach((u) => {
               state.bot.api.users.info({user: u}, function(err, response) {
-                state.service.giveRecognition(recognizer, response.user.id, state.full_message, '#flywheel', ['#excellence', '#energy']);
+                state.service.giveRecognition(recognizer, response.user.id, state.full_message, message.channel, tags);
+              });
+              console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
+              state.service.countRecognitionsReceived(u).then ( (response) => {
+                const numberRecieved = response + count;
+                state.bot.say({
+                  text: `You just got recognized by <@${message.user}> in <#${message.channel}> Your total ${emoji} balance = ${numberRecieved} !\n>>>${message.text}`,
+                  channel: u,
+                });
               });
             });
-            console.log('should be valid and fine');
+          } else {
+            console.log("TODO: Need to throw error here and break out of function chain...");
+            // TODO: Need to throw error here and break out of function chain...
           }
-          else {
-              console.log('Should reject for daily limit reach');
-          }
+          });
         });
-      });
-      console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
-    });
-    // TODO: add the new balance to the message
-    state.bot.say({
-      text: `You just got recognized by <@${message.user}> in <#${message.channel}>!\n>>>${message.text}`,
-      channel: u,
-    });
-  });
+      //});  
+    //});
   return state;
 };
 
 const whisperReply = (state) => {
   // TODO: add # left to give for today in the whisper below
-  const reply = 'Your recognition has been sent.  Well done!';
+  const reply = 'Your recognition has been sent. Well done! You have';
 
   return new Promise((resolve, reject) => {
     state.bot.whisper(state.message, reply, (err) => {
