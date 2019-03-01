@@ -29,7 +29,7 @@ resource "aws_ssm_parameter" "slack_client_id" {
 }
 
 resource "aws_ssm_parameter" "slack_client_secret" {
-  name        = "gratibot-client-secret"
+  name        = "gratibot-slack-client-secret"
   description = "slack client secret for gratibot app"
   key_id      = "${aws_kms_key.gratibot.key_id}"
   value       = "${var.slack_client_secret}"
@@ -37,7 +37,7 @@ resource "aws_ssm_parameter" "slack_client_secret" {
 }
 
 resource "aws_ssm_parameter" "slack_client_signing_secret" {
-  name        = "gratibot-signing-secret"
+  name        = "gratibot-slack-signing-secret"
   description = "slack client signing secret for gratibot app"
   key_id      = "${aws_kms_key.gratibot.key_id}"
   value       = "${var.slack_client_signing_secret}"
