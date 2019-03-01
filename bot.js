@@ -59,6 +59,7 @@ if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
   // process.exit(1);
 }
 
+
 var Botkit = require('botkit');
 var debug = require('debug')('botkit:main');
 
@@ -102,9 +103,11 @@ require(__dirname + '/components/user_registration.js')(controller);
 // Send an onboarding message when a new team joins
 require(__dirname + '/components/onboarding.js')(controller);
 
+const context = {service};
+
 var normalizedPath = require("path").join(__dirname, "skills");
 require("fs").readdirSync(normalizedPath).forEach(function(file) {
-  require("./skills/" + file)(controller, {service:service});
+  require("./skills/" + file)(controller, context);
 });
 
 // This captures and evaluates any message sent to the bot as a DM
@@ -147,18 +150,3 @@ function usage_tip() {
     console.log('Get Slack app credentials here: https://api.slack.com/apps')
     console.log('~~~~~~~~~~');
 }
-
-//make sure to delete everything below this after testing!!!
-service.giveRecognition('justin', 'casey', 'great job with the thing!', '#flywheel', ['#excellence', '#energy']).then( (response) => {
-    console.log(response);
-});
-
-service.countRecognitionsReceived('casey', 'America/New York',3).then( (response) => {
-    console.log(response);
-});
-service.countRecognitionsReceived('casey', 'America/New York',1).then( (response) => {
-    console.log(response);
-});
-service.countRecognitionsReceived('justin', 'America/New York',1).then( (response) => {
-    console.log(response);
-});

@@ -4,7 +4,7 @@ const helpSkill = require('../../skills/help.js');
 
 describe('help skill', () => {
   describe('hears help as ambient', () => {
-    it('should ignore', function () {
+    it('should ignore', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -98,7 +98,7 @@ describe('help skill', () => {
     this.bot = this.controller.spawn({ type: 'slack' });
     helpSkill(this.controller);
   });
-  afterEach(function () {
+  afterEach(() => {
     this.controller.shutdown();
   });
 });

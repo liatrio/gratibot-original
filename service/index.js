@@ -108,3 +108,4 @@ service.prototype.getLeaderboard = function(user, days) {
 }
 
 module.exports = service;
+

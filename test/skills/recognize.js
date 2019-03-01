@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 
 describe('recognize skill', () => {
   describe('hears emoji', () => {
-    it('should ignore missing mention', function () {
+    it('should ignore missing mention', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -30,7 +30,7 @@ describe('recognize skill', () => {
       });
     });
 
-    it('should ignore self recognition', function () {
+    it('should ignore self recognition', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -50,7 +50,7 @@ describe('recognize skill', () => {
       });
     });
 
-    it('should recognize 1 emoji for 1 recipient', function () {
+    it('should recognize 1 emoji for 1 recipient', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -71,7 +71,7 @@ describe('recognize skill', () => {
       });
     });
 
-    it('should recognize 2 emojis for 1 recipient', function () {
+    it('should recognize 2 emojis for 1 recipient', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -92,7 +92,7 @@ describe('recognize skill', () => {
       });
     });
 
-    it('should recognize 2 emojis for 2 recipient', function () {
+    it('should recognize 2 emojis for 2 recipient', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -114,35 +114,21 @@ describe('recognize skill', () => {
     });
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     this.controller = Botmock({
       debug: false,
     });
     this.bot = this.controller.spawn({ type: 'slack' });
-    const mongodb = {
-      recognition: {
-        insert: (document) => {
-          const response = document;
-          response[idField] = Math.random();
-          return Promise.resolve(response);
-        },
-        count: (document) => {
-          const response = Math.random();
-          return Promise.resolve(response);
-        },
-      },
-    };
-    const service = new ServiceObj(mongodb);
-    recognizeSkill(this.controller, service);
+    recognizeSkill(this.controller);
   });
-  afterEach(function () {
+  afterEach(() => {
     this.controller.shutdown();
   });
 });
 
-/*
+
 describe('recognize', () => {
-  //const recognize = rewire('../../skills/recognize.js');
+  const recognize = rewire('../../skills/recognize.js');
   describe('extractUsers', () => {
     const extractUsers = recognize.__get__('extractUsers');
 
@@ -176,4 +162,3 @@ describe('recognize', () => {
     });
   });
 });
-*/
