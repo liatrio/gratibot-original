@@ -26,7 +26,7 @@ describe('help skill', () => {
   });
 
   describe('hears help as direct_message', () => {
-    it('should respond with help text', function () {
+    it('should respond with help text', () => {
       const sequence = [
         {
           type: 'direct_message',
@@ -59,7 +59,7 @@ describe('help skill', () => {
   });
 
   describe('hears help as direct_mention', () => {
-    it('should respond with help text', function () {
+    it('should respond with help text', () => {
       const sequence = [
         {
           type: 'direct_mention',
@@ -91,7 +91,7 @@ describe('help skill', () => {
     });
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     this.controller = Botmock({
       debug: false,
     });
