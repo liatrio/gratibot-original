@@ -1,8 +1,11 @@
-const { expect } = require('chai');
 const Botmock = require('botkit-mock');
 const rewire = require('rewire');
-//const recognizeSkill = require('../../skills/recognize.js');
-const ServiceObj = require('../../service');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const recognizeSkill = require('../../skills/recognize.js');
+
+const { expect } = chai;
+chai.use(chaiAsPromised);
 
 describe('recognize skill', () => {
   describe('hears emoji', () => {
@@ -35,7 +38,7 @@ describe('recognize skill', () => {
           channel: 'random',
           messages: [
             {
-              text: '<@ALICE> gets :toast:',
+              text: '<@ALICE> gets :toast: for being the best ever',
               isAssertion: true,
             },
           ],
@@ -63,7 +66,7 @@ describe('recognize skill', () => {
       ];
 
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Awesome! Giving 1 :toast: to <@BOB>');
+        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
         expect(message.ephemeral).to.be.true;
       });
     });
@@ -85,7 +88,7 @@ describe('recognize skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal('Awesome! Giving 2 :toast: to <@BOB>');
+        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
       });
     });
 
@@ -106,7 +109,7 @@ describe('recognize skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal('Awesome! Giving 2 :toast: to <@BOB>,<@CAROL>');
+        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
       });
     });
   });
@@ -144,47 +147,32 @@ describe('recognize', () => {
     const extractUsers = recognize.__get__('extractUsers');
 
     it('should handle no matches', () => {
-      expect(extractUsers('foo bar')).to.be.empty;
+      const state = {
+        message: {
+          text: 'foo bar',
+        },
+      };
+      expect(extractUsers(state)).to.eventually.be.empty;
     });
 
     it('should handle 1 match', () => {
-      expect(extractUsers('foo <@UAU5J2XEU> bar')).to.have.members(['UAU5J2XEU']);
+      const state = {
+        message: {
+          text: 'foo <@UAU5J2XEU> bar',
+        },
+      };
+      extractUsers(state);
+      expect(state.users).to.have.members(['UAU5J2XEU']);
     });
 
     it('should handle 2 match', () => {
-      expect(extractUsers('<@UAUXXXX> foo <@UAU5J2XEU> bar')).to.have.members(['UAUXXXX', 'UAU5J2XEU']);
-    });
-  });
-
-  describe('extractTags', () => {
-    const extractTags = recognize.__get__('extractTags');
-
-    it('should handle no matches', () => {
-      expect(extractTags('foo bar')).to.be.empty;
-    });
-
-    it('should handle 1 match', () => {
-      expect(extractTags('foo #test bar')).to.have.members(['test']);
-    });
-
-    it('should handle 2 match', () => {
-      expect(extractTags('#test2 foo #test3 bar')).to.have.members(['test2', 'test3']);
-    });
-  });
-
-  describe('countEmojis', () => {
-    const countEmojis = recognize.__get__('countEmojis');
-
-    it('should handle no matches', () => {
-      expect(countEmojis('foo bar')).to.equal(0);
-    });
-
-    it('should handle 1 match', () => {
-      expect(countEmojis('foo :toast: bar')).to.equal(1);
-    });
-
-    it('should handle 2 match', () => {
-      expect(countEmojis(':toast: :toast: foo bar')).to.equal(2);
+      const state = {
+        message: {
+          text: '<@UAUXXXX> foo <@UAU5J2XEU> bar',
+        },
+      };
+      extractUsers(state);
+      expect(state.users).to.have.members(['UAUXXXX', 'UAU5J2XEU']);
     });
   });
 });

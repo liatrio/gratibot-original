@@ -26,6 +26,9 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
       channel: channel,
       values: values
     }).then( (response) => {
+
+      
+
       console.log(response);
       return response;
     });

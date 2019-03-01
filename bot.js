@@ -50,6 +50,9 @@ This bot demonstrates many of the core features of Botkit:
 var env = require('node-env-file');
 env(__dirname + '/.env');
 
+let mongodb = require("./service/mongo.js");
+let service_obj = require("./service/");
+let service = new service_obj(mongodb);
 
 if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
   usage_tip();
@@ -101,7 +104,7 @@ require(__dirname + '/components/onboarding.js')(controller);
 
 var normalizedPath = require("path").join(__dirname, "skills");
 require("fs").readdirSync(normalizedPath).forEach(function(file) {
-  require("./skills/" + file)(controller);
+  require("./skills/" + file)(controller, {service:service});
 });
 
 // This captures and evaluates any message sent to the bot as a DM
@@ -146,10 +149,6 @@ function usage_tip() {
 }
 
 //make sure to delete everything below this after testing!!!
-let mongodb = require("./service/mongo.js");
-let service_obj = require("./service/");
-let service = new service_obj(mongodb);
-
 service.giveRecognition('justin', 'casey', 'great job with the thing!', '#flywheel', ['#excellence', '#energy']).then( (response) => {
     console.log(response);
 });
