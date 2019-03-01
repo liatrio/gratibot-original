@@ -16,6 +16,7 @@ resource "aws_docdb_cluster" "gratibot" {
 }
 
 resource "aws_docdb_cluster_instance" "gratibot_cluster_instances" {
+  count              = 1
   cluster_identifier = "${aws_docdb_cluster.gratibot.id}"
   identifier         = "docdb-cluster-gratibot-${count.index}"
   instance_class     = "db.r4.large"
