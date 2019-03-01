@@ -67,6 +67,7 @@ const checkMessageLength = (state) => {
 
 const checkRecognitionCount = (state) => {
   const { message } = state;
+
   state.emojiCount = (message.text.match(emojiRegex) || []).length;
 
   return new Promise((resolve, reject) => {

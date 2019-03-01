@@ -9,7 +9,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 describe('recognize skill', () => {
   describe('hears emoji', () => {
-    it('should ignore missing mention', function () {
+    it('should ignore missing mention', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -32,7 +32,7 @@ describe('recognize skill', () => {
       });
     });
 
-    it('should ignore self recognition', function () {
+    it('should ignore self recognition', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -52,7 +52,7 @@ describe('recognize skill', () => {
       });
     });
 
-    it('should recognize 1 emoji for 1 recipient', function () {
+    it('should recognize 1 emoji for 1 recipient', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -73,7 +73,7 @@ describe('recognize skill', () => {
       });
     });
 
-    it('should recognize 2 emojis for 1 recipient', function () {
+    it('should recognize 2 emojis for 1 recipient', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -94,7 +94,7 @@ describe('recognize skill', () => {
       });
     });
 
-    it('should recognize 2 emojis for 2 recipient', function () {
+    it('should recognize 2 emojis for 2 recipient', () => {
       const sequence = [
         {
           type: 'ambient',
@@ -116,14 +116,14 @@ describe('recognize skill', () => {
     });
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     this.controller = Botmock({
       debug: false,
     });
     this.bot = this.controller.spawn({ type: 'slack' });
     recognizeSkill(this.controller);
   });
-  afterEach(function () {
+  afterEach(() => {
     this.controller.shutdown();
   });
 });
