@@ -9,7 +9,7 @@ const failImageURL = 'https://media0.giphy.com/media/ac7MA7r5IMYda/giphy-downsiz
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
 const emojiRegex = new RegExp(emoji, 'g');
-const exemptUsers = ['U037FL37G', 'U99UTM8C8'];
+const exemptUsers = ['U037FL37G'];
 
 const extractUsers = (state) => {
   state.users = state.message.text.match(userRegex);
