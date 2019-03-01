@@ -18,6 +18,7 @@ resource "aws_ecs_task_definition" "gratibot" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "${var.fargate_cpu}"
   memory                   = "${var.fargate_memory}"
+  execution_role_arn       = "${data.aws_iam_role.ecs_task_execution.arn}"
 
   container_definitions = <<DEFINITION
   [
@@ -25,6 +26,14 @@ resource "aws_ecs_task_definition" "gratibot" {
       "cpu": ${var.fargate_cpu},
       "executionRoleArn": "${data.aws_iam_role.ecs_task_execution.arn}",
       "image": "${var.app_image}",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "awslogs-gratibot",
+          "awslogs-region": "${var.aws_region}",
+          "awslogs-stream-prefix": "gratibot"
+        }
+      },
       "memory": ${var.fargate_memory},
       "name": "gratibot",
       "networkMode": "awsvpc",
@@ -41,11 +50,15 @@ resource "aws_ecs_task_definition" "gratibot" {
         },
         {
           "name": "clientSecret",
-          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-client-secret"
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-client-secret"
         },
         {
           "name": "clientSigningSecret",
           "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-slack-signing-secret"
+        },
+        {
+          "name": "mongodbUri",
+          "valueFrom": "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/gratibot-mongodb-string"
         }
       ]
     }

@@ -9,10 +9,10 @@ const failImageURL = 'https://media0.giphy.com/media/ac7MA7r5IMYda/giphy-downsiz
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
 const emojiRegex = new RegExp(emoji, 'g');
+const exemptUsers = ['U037FL37G'];
 
 const extractUsers = (state) => {
   state.users = state.message.text.match(userRegex);
-
   // make sure there was a mention in the message
   if (!state.users) {
     return new Promise((resolve, reject) => state.bot.whisper(state.message, 'Forgetting something?  Try again...this time be sure to mention who you want to recognize with `@user`', reject));
@@ -20,7 +20,6 @@ const extractUsers = (state) => {
 
   // pull out userid
   state.users = state.users.map(user => user.slice(2, -1));
-
   return state;
 };
 
@@ -44,7 +43,8 @@ const checkForSelfRecognition = (state) => {
 
 const checkMessageLength = (state) => {
   // Strips users _ emoji out of message
-  const trimmedMessage = state.message.text.replace(/\s*<.*?>\s*/g, '').replace(emojiRegex, '');
+  state.full_message = state.message.text;
+  const trimmedMessage = state.full_message.replace(/\s*<.*?>\s*/g, '').replace(emojiRegex, '');
 
   if (trimmedMessage.length < minLength) {
     return new Promise((resolve, reject) => {
@@ -62,24 +62,49 @@ const checkMessageLength = (state) => {
       });
     });
   }
-
   return state;
+};
+
+const checkRecognitionCount = (state) => {
+  const { message } = state;
+
+  state.emojiCount = (message.text.match(emojiRegex) || []).length;
+
+  return new Promise((resolve, reject) => {
+    state.bot.api.users.info({ user: message.user }, (err, response) => {
+      const recognizer = response.user.id;
+      const userTz = response.user.tz;
+      state.service.countRecognitionsGiven(recognizer, userTz, 1).then((recResponse) => {
+        state.countRecognitionsGivenBefore = recResponse;
+        state.recognitionsGivenAfter = state.countRecognitionsGivenBefore
+          + (state.users.length * state.emojiCount);
+        state.userIsExempt = exemptUsers.some(exemptUser => exemptUser === recognizer);
+        if (state.recognitionsGivenAfter <= 5 || state.userIsExempt) {
+          resolve(state);
+        } else {
+          reject(new Error(`Sorry <@${message.user}> a maximum of 5 ${emoji} are allowed per day`));
+        }
+      });
+    });
+  });
 };
 
 const sendRecognition = (state) => {
   const { message } = state;
-  const count = (message.text.match(emojiRegex) || []).length;
   const tags = (message.text.match(tagRegex) || []).map(tag => tag.slice(1));
-
   state.users.forEach((u) => {
-    [...Array(count)].forEach(() => {
-      // TODO: call service to write recognition to DB
-      console.log(`Recording recognition for ${u} from ${message.user} in channel ${message.channel} with tags ${tags}`);
+    state.bot.api.users.info({ user: u }, (err, response) => {
+      for (let i = 0; i < state.emojiCount; i += 1) {
+        state.service.giveRecognition(message.user, response.user.id,
+          state.full_message, message.channel, tags);
+      }
     });
-    // TODO: add the new balance to the message
-    state.bot.say({
-      text: `You just got recognized by <@${message.user}> in <#${message.channel}>!\n>>>${message.text}`,
-      channel: u,
+    state.service.countRecognitionsReceived(u).then((response) => {
+      const numberRecieved = response;
+      state.bot.say({
+        text: `You just got recognized by <@${message.user}> in <#${message.channel}> Your total ${emoji} balance = ${numberRecieved} !\n>>>${message.text}`,
+        channel: u,
+      });
     });
   });
   return state;
@@ -87,7 +112,8 @@ const sendRecognition = (state) => {
 
 const whisperReply = (state) => {
   // TODO: add # left to give for today in the whisper below
-  const reply = 'Your recognition has been sent.  Well done!';
+  const reply = state.userIsExempt ? `Your recognition has been sent. Well done! You have infinite ${emoji} to give out`
+    : `Your recognition has been sent. Well done! You have ${5 - state.recognitionsGivenAfter} ${emoji} remaining`;
 
   return new Promise((resolve, reject) => {
     state.bot.whisper(state.message, reply, (err) => {
@@ -100,17 +126,19 @@ const whisperReply = (state) => {
   });
 };
 
-module.exports = function listener(controller) {
+module.exports = function listener(controller, service) {
   controller.hears([emoji], 'ambient', (bot, message) => {
     const statePromise = Promise.resolve({
       bot,
       message,
+      service,
     });
 
     return statePromise
       .then(extractUsers)
       .then(checkForSelfRecognition)
       .then(checkMessageLength)
+      .then(checkRecognitionCount)
       .then(sendRecognition)
       .then(whisperReply)
       .catch(error => bot.whisper(message, error.message));
