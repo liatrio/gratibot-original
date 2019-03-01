@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "gratibot" {
         "options": {
           "awslogs-group": "awslogs-gratibot",
           "awslogs-region": "${var.aws_region}",
-          "awslogs-stream-prefex": "gratibot"
+          "awslogs-stream-prefix": "gratibot"
         }
       },
       "memory": ${var.fargate_memory},
