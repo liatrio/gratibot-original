@@ -22,28 +22,45 @@ describe('service index', () => {
     });
   });
 
-  // will fix other tests in another ticket
-  /*
   describe('count recognitions given', () => {
+    const mongodb = {
+      recognition: {
+        count: () => {
+          const response = Math.random();
+          return Promise.resolve(response);
+        },
+      },
+    };
+    const service = new ServiceObj(mongodb);
     it('not cause exception', () => {
-      expect(() => { service.countRecognitionsGiven('user', 1); }).to.not.throw();
+      expect(() => { service.countRecognitionsGiven('user', 'timezone', 1); }).to.not.throw();
     });
-
     it('returns promise', () => {
-      expect(service.countRecognitionsGiven('user', 1)).to.be.an.instanceof(Promise);
+      expect(service.countRecognitionsGiven('user', 'timezone', 1)).to.be.an.instanceof(Promise);
     });
   });
 
   describe('count recognitions received', () => {
+    const mongodb = {
+      recognition: {
+        count: () => {
+          const response = Math.random();
+          return Promise.resolve(response);
+        },
+      },
+    };
+    const service = new ServiceObj(mongodb);
     it('not cause exception', () => {
-      expect(() => { service.countRecognitionsReceived('user', 1); }).to.not.throw();
+      expect(() => { service.countRecognitionsReceived('user', 'timezone', 1); }).to.not.throw();
     });
-
     it('returns promise', () => {
-      expect(service.countRecognitionsReceived('user', 1)).to.be.an.instanceof(Promise);
+      expect(service.countRecognitionsReceived('user', 'timezone', 1)).to.be.an.instanceof(Promise);
     });
   });
+});
 
+// will fix other tests in another ticket
+/*
   describe('get leaderboard', () => {
     it('not cause exception', () => {
       expect(() => { service.getLeaderboard(30); }).to.not.throw();
@@ -54,4 +71,3 @@ describe('service index', () => {
     });
   });
   */
-});
