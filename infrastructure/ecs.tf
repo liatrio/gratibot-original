@@ -26,6 +26,14 @@ resource "aws_ecs_task_definition" "gratibot" {
       "cpu": ${var.fargate_cpu},
       "executionRoleArn": "${data.aws_iam_role.ecs_task_execution.arn}",
       "image": "${var.app_image}",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "awslogs-gratibot",
+          "awslogs-region": "${var.aws_region}",
+          "awslogs-stream-prefex": "gratibot"
+        }
+      },
       "memory": ${var.fargate_memory},
       "name": "gratibot",
       "networkMode": "awsvpc",
