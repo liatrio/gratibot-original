@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE='liatrio/gratibot'
-        SLACK_CHANNEL="flywheel"
+        SLACK_CHANNEL="chatops-dev"
         APP_DOMAIN='liatr.io'
     }
     stages {
@@ -65,14 +65,22 @@ pipeline {
             }
         }
         stage('Prod environment deploy') {
+            when {
+                branch 'master'
+            }
+            agent {
+                docker { image 'hashicorp/terraform:light' }
+            }
             steps {
+                slackSend channel: "#${env.SLACK_CHANNEL}", message: "Promote gratibot: (<${env.BUILD_URL}|Go to job to approve/deny>)"
+                input('Proceed to production?')
                 echo 'placeholder for prod deployment'
             }
         }
     }
     post {
-        regression {
-            slackSend channel: "#${env.SLACK_CHANNEL}",  color: "danger", message: "Build regression: ${env.JOB_NAME} on build #${env.BUILD_NUMBER} (<${env.BUILD_URL}|go there>)"
+        failure {
+            slackSend channel: "#${env.SLACK_CHANNEL}",  color: "danger", message: "Build failed: ${env.JOB_NAME} on build #${env.BUILD_NUMBER} (<${env.BUILD_URL}|go there>)"
         }
         fixed {
             slackSend channel: "#${env.SLACK_CHANNEL}", color: "good",  message: "Build recovered: ${env.JOB_NAME} on #${env.BUILD_NUMBER}"

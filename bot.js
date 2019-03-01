@@ -50,11 +50,15 @@ This bot demonstrates many of the core features of Botkit:
 var env = require('node-env-file');
 env(__dirname + '/.env');
 
+let mongodb = require("./service/mongo.js");
+let service_obj = require("./service/");
+let service = new service_obj(mongodb);
 
 if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
   usage_tip();
   // process.exit(1);
 }
+
 
 var Botkit = require('botkit');
 var debug = require('debug')('botkit:main');
@@ -99,9 +103,11 @@ require(__dirname + '/components/user_registration.js')(controller);
 // Send an onboarding message when a new team joins
 require(__dirname + '/components/onboarding.js')(controller);
 
+const context = {service};
+
 var normalizedPath = require("path").join(__dirname, "skills");
 require("fs").readdirSync(normalizedPath).forEach(function(file) {
-  require("./skills/" + file)(controller);
+  require("./skills/" + file)(controller, context);
 });
 
 // This captures and evaluates any message sent to the bot as a DM

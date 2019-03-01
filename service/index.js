@@ -1,3 +1,5 @@
+const moment = require('moment-timezone');
+
 function service(mongodb) {
   this.mongodb = mongodb;
 }
@@ -24,101 +26,85 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
       channel: channel,
       values: values
     }).then( (response) => {
+
+      
+
       console.log(response);
       return response;
     });
 }
 
+/**
+* Count the number of recognitions given to a user
+*
+* @param {string} user Name of Slack user recognized
+* @param {int} days Number of days to calculate count for
+* @return Promise which resolves to result from mongodb count query
+**/
+service.prototype.countRecognitionsReceived = function(user, timezone = null, days = null) {
+  let filter = {recognizee:user}
+  if(days && timezone) {
+    let userDate = moment(Date.now()).tz(timezone);
+    let midnight = userDate.startOf('day');
+    midnight = midnight.subtract(days - 1,'days');
+    filter.timestamp =
+      {
+        $gte: new Date(midnight)
+      }
+  }
+  return this.mongodb.recognition.count(filter).then( (response) => {
+    console.log(response);
+    return response;
+  });
+}
+
+/**
+* Count the nubmer of recogintions given out by a user
+*
+* @param {string} user Name of Slack user recognizing others
+* @param {int} days Number of days to calculate count for
+* @return Promise which resolves to result from mongodb count query
+**/
+service.prototype.countRecognitionsGiven = function(user, timezone = null, days = null) {
+  let filter = {recognizer:user}
+  if(days && timezone) {
+    let userDate = moment(Date.now()).tz(timezone);
+    let midnight = userDate.startOf('day');
+    midnight = midnight.subtract(days - 1,'days');
+    filter.timestamp =
+      {
+        $gte: new Date(midnight)
+      }
+  }
+  return this.mongodb.recognition.count(filter).then( (response) => {
+    console.log(response);
+    return response;
+  });
+}
+
+
+/**
+* Calculate the score for the top users for this month.
+* Score = (Number of recognitions given to user) - (Number of recognitions given to user)/(Distinct number of users that have recognized user)
+*
+* @param {int} days Number of days to calculate leaderboard for
+* @return Promise which resolves to leaderboard data. Array [{user: 'USERNAME', score: SCORE_VALUE}]
+**/
+//service.prototype.getLeaderboard = function(user, days) {
+  /*recogReceived = countRecognitionsReceived(
+  *return mongo.recognition.find({ recognizee:user }).then( (response) => {
+  * console.log(response);
+  * //response[0]
+  * let count = 0;
+  * for(i=0; i<response.length; i++) {
+  *   count++;
+  *   //response[i]
+  * }
+  * console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ' + count);
+  * return response;
+  });
+**/
+//  return Promise.resolve([{user: 'scribbles', score: 1000000}]); // TODO replace with promise which resolves to leaderboard data
+//}
 module.exports = service;
 
-//  --- We will be refactoring the code below to look like the code above ---
-//
-//  /**
-//  * Count the number of recognitions given to a user
-//  *
-//  * @param {string} user Name of Slack user recognized
-//  * @param {int} days Number of days to calculate count for
-//  * @return Promise which resolves to result from mongodb count query
-//  **/
-//  countRecognitionsReceived: function(user, days) {
-//    let filter = {recognizee:user}
-//    if(undefined != days && days) {
-//      let date = Date.now() - 86400000 * days
-//      filter.timestamp = 
-//      {
-//        $gte: new Date(date)
-//      }
-//    }
-//    return mongo.recognition.count(filter).then( (response) => {
-//      console.log(response);
-//      return response;
-//    });
-//  },
-//  /**
-//  * Count the nubmer of recogintions given out by a user
-//  *
-//  * @param {string} user Name of Slack user recognizing others
-//  * @param {int} days Number of days to calculate count for
-//  * @return Promise which resolves to result from mongodb count query
-//  **/
-//  countRecognitionsGiven: function(user, days) {
-//    let filter = {recognizer:user}
-//    if(undefined != days && days) {
-//      let date = Date.now() - 86400000 * days
-//      filter.timestamp = 
-//      {
-//        $gte: new Date(date)
-//      }
-//    }
-//    return mongo.recognition.count(filter).then( (response) => {
-//      console.log(response);
-//      return response;
-//    });
-//  },
-//
-//  /**
-//  * 
-//  *
-//  * @param {string} user Name of Slack user recognizing others
-//  * @param {int} days Number of days to calculate count for
-//  * @return Promise which resolves to result from mongodb count query
-//  **/
-//  /*
-//  dailyRecognitions: function(user) {
-//    let filter = {recognizer:user}
-//    let date = Date.now() - (Date.now() % 86400000)
-//    filter.timestamp = 
-//    {
-//      $gte: new Date(date)
-//    }
-//    return mongo.recognition.count(filter).then( (response) => {
-//      console.log(response);
-//      return response;
-//    });
-//  },
-//  */
-//
-//  /**
-//  * Calculate the score for the top users for this month.
-//  * Score = (Number of recognitions given to user) - (Number of recognitions given to user)/(Distinct number of users that have recognized user)
-//  *
-//  * @param {int} days Number of days to calculate leaderboard for
-//  * @return Promise which resolves to leaderboard data. Array [{user: 'USERNAME', score: SCORE_VALUE}]
-//  **/
-//  getLeaderboard: function(user, days) {
-//    /*recogReceived = countRecognitionsReceived(
-//    *return mongo.recognition.find({ recognizee:user }).then( (response) => {
-//    * console.log(response);
-//    * //response[0]
-//    * let count = 0;
-//    * for(i=0; i<response.length; i++) {
-//    *   count++;
-//    *   //response[i]
-//    * }
-//    * console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ' + count);
-//    * return response;
-//    });
-//    **/ 
-//    return Promise.resolve([{user: 'scribbles', score: 1000000}]); // TODO replace with promise which resolves to leaderboard data
-//  }
-//}
