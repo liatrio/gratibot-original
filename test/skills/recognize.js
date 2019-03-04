@@ -113,6 +113,159 @@ describe('recognize skill', () => {
     });
   });
 
+  describe('hears description as ambient', () => {
+    it('should give toast to user', () => {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: <@FOO> because because because because because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 1 :toast: remaining');
+      });
+    });
+    it('should give toast to multiple users', () => {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: to <@FOO> and <@BAR> because because because because because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 0 :toast: remaining');
+      });
+    });
+    it('should give multiple toast to multiple users', () => {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: :toast: to <@FOO> and <@BAR> because because because because because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Sorry <@foo> a maximum of 5 :toast: are allowed per day');
+      });
+    });
+    it('should give multiple toast to single user', () => {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: :toast: to <@FOO> because because because because because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 0 :toast: remaining');
+      });
+    });
+    it('should ask for reason', () => {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: <@FOO>',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Please provide more details why you are giving :toast:');
+      });
+    });
+    it('should not do anything', () => {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give @jon because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.be.an('undefined');
+      });
+    });
+    it('Should reject reason less than 20 characters', () => {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: <@FOO> because',
+            },
+            {
+              text: 'Because',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Giving :toast: requires a description greater than 20 characters. Please try again');
+      });
+    });
+    it('Should accept reason greater than 20 characters', () => {
+      const sequence = [
+        {
+          type: 'ambient',
+          user: 'foo',
+          channel: 'bar',
+          messages: [
+            {
+              text: 'Give :toast: <@FOO>',
+            },
+            {
+              text: 'Because foo bar Because foo bar Because foo bar ',
+              isAssertion: true,
+            },
+          ],
+        },
+      ];
+      return this.bot.usersInput(sequence).then((message) => {
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 1 :toast: remaining');
+      });
+    });
+  });
+
   beforeEach(() => {
     this.controller = Botmock({
       debug: false,
