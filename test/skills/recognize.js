@@ -1,9 +1,9 @@
-/*
 const Botmock = require('botkit-mock');
 const rewire = require('rewire');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const recognizeSkill = require('../../skills/recognize.js');
+const ServiceObj = require('../../service');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -26,9 +26,7 @@ describe('recognize skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal
-        ('Forgetting something?  Try again...this time be sure
-        to mention who you want to recognize with `@user`');
+        expect(message.text).to.equal('Forgetting something?  Try again...this time be sure to mention who you want to recognize with `@user`');
       });
     });
 
@@ -66,9 +64,8 @@ describe('recognize skill', () => {
           ],
         },
       ];
-
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 1 :toast: remaining');
         expect(message.ephemeral).to.be.true;
       });
     });
@@ -90,7 +87,7 @@ describe('recognize skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 0 :toast: remaining');
       });
     });
 
@@ -111,7 +108,7 @@ describe('recognize skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal('Your recognition has been sent.  Well done!');
+        expect(message.text).to.equal('Sorry <@ALICE> a maximum of 5 :toast: are allowed per day');
       });
     });
   });
@@ -121,7 +118,22 @@ describe('recognize skill', () => {
       debug: false,
     });
     this.bot = this.controller.spawn({ type: 'slack' });
-    recognizeSkill(this.controller);
+    const idField = '_id';
+    const mongodb = {
+      recognition: {
+        count: () => {
+          const response = 3;
+          return Promise.resolve(response);
+        },
+        insert: (document) => {
+          const response = document;
+          response[idField] = 3;
+          return Promise.resolve(response);
+        },
+      },
+    };
+    const service = new ServiceObj(mongodb);
+    recognizeSkill(this.controller, service);
   });
   afterEach(() => {
     this.controller.shutdown();
@@ -163,5 +175,3 @@ describe('recognize', () => {
     });
   });
 });
-
-*/
