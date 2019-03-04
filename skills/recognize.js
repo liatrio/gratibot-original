@@ -126,7 +126,8 @@ const whisperReply = (state) => {
   });
 };
 
-module.exports = function listener(controller, service) {
+module.exports = function listener(controller, context) {
+  const { service } = context;
   controller.hears([emoji], 'ambient', (bot, message) => {
     const statePromise = Promise.resolve({
       bot,

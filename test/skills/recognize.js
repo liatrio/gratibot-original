@@ -286,7 +286,8 @@ describe('recognize skill', () => {
       },
     };
     const service = new ServiceObj(mongodb);
-    recognizeSkill(this.controller, service);
+    const context = { service };
+    recognizeSkill(this.controller, context);
   });
   afterEach(() => {
     this.controller.shutdown();
