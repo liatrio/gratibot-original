@@ -141,7 +141,6 @@ if (process.env.studio_token) {
     console.log('Learn mode https://github.com/howdyai/botkit-cms');
 }
 
-
 function usage_tip() {
     console.log('~~~~~~~~~~');
     console.log('Botkit Starter Kit');
