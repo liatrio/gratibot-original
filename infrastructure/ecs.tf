@@ -29,7 +29,7 @@ resource "aws_ecs_task_definition" "gratibot" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "awslogs-gratibot",
+          "awslogs-group": "Gratibot",
           "awslogs-region": "${var.aws_region}",
           "awslogs-stream-prefix": "gratibot"
         }
