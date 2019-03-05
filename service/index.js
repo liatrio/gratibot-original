@@ -17,6 +17,7 @@ function service(mongodb) {
 service.prototype.giveRecognition = function(recognizer, recognizee, message, channel, values) {
     //write in the current timestamp
     let timestamp = new Date();
+    //let timestamp = time;
     return this.mongodb.recognition.insert(
     {
       recognizer: recognizer,
@@ -84,7 +85,7 @@ service.prototype.countRecognitionsGiven = function(user, timezone = null, days 
 * Score = (Number of recognitions given to user) - (Number of recognitions given to user)/(Distinct number of users that have recognized user)
 *
 * @param {int} days Number of days to calculate leaderboard for
-* @return Promise which resolves to leaderboard data. Array [{user: 'USERNAME', score: SCORE_VALUE}]
+* @return Promise which resolves to leaderboard data. Array [{name: 'USERNAME', count: COUNT_VALUE, score: SCORE_VALUE}]
 **/
 service.prototype.getLeaderboard = function(timezone = null, days = null) {
   //get only the entries from the specifc day from midnight
@@ -101,13 +102,8 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
   return this.mongodb.recognition.find(filter).then( (response) => {
 
     //Format for array of objects
-    var recognizees = [{
-      name: '',
-      count: '',
-      recognizers: [],
-      score: 0,
-    }];
-
+    //console.log(response);
+    var recognizees = [];
     for (var i = 0; i < response.length; i++) {
       recognizeeB = response[i];
 
@@ -139,7 +135,15 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
           });
       }
     }
-    recognizees.splice(0, 1);
+
+    //sort recognizees by score in descending order
+    //recognizees.score.sort(function(a, b){return a-b});
+    recognizees.sort( (a, b) => {
+      return b.score - a.score;
+    });
+    //keep the top 10 users
+    recognizees = recognizees.slice(0, 10);
+
     //console.log(recognizees);
     return recognizees;
   });
