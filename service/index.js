@@ -87,6 +87,71 @@ service.prototype.countRecognitionsGiven = function(user, timezone = null, days 
 * @param {int} days Number of days to calculate leaderboard for
 * @return Promise which resolves to leaderboard data. Array [{user: 'USERNAME', score: SCORE_VALUE}]
 **/
+service.prototype.getLeaderboard = function(timezone = null, days = null) {
+  //get only the entries from the specifc day from midnight
+  let filter = {}
+  if(days && timezone) {
+    let userDate = moment(Date.now()).tz(timezone);
+    let midnight = userDate.startOf('day');
+    midnight = midnight.subtract(days - 1,'days');
+    filter.timestamp =
+      {
+        $gte: new Date(midnight)
+      }
+  }
+  return this.mongodb.recognition.find(filter).then( (response) => {
+
+    //Format for array of objects
+    var recognizees = [{
+      name: '',
+      count: '',
+      recognizers: [],
+      score: 0,
+    }];
+
+    for (var i = 0; i < response.length; i++) {
+      recognizeeB = response[i];
+
+      console.log('*************************************************');
+      console.log(response);
+      console.log('*************************************************');
+      var recognizer = '';
+      if(!recognizees.some( (recognizeeA) => {
+        if(recognizeeA.name == recognizeeB.recognizee) {
+          return true;
+        }
+        else {
+          
+        }
+      })) {
+        recognizees.push(
+          {
+            name: recognizeeB.recognizee,
+            count: 1,
+            recognizers: recognizeeB.recognizer,
+            score: 0,
+          });
+      }
+      else {
+        //check if recognizer is unique
+        //increment count
+        //update score
+
+
+
+      }
+    }
+
+    console.log('---------------------------------------------------------------');
+    console.log(recognizees);
+    console.log('---------------------------------------------------------------');
+    
+    return response;
+  });
+}
+
+
+
 //service.prototype.getLeaderboard = function(user, days) {
   /*recogReceived = countRecognitionsReceived(
   *return mongo.recognition.find({ recognizee:user }).then( (response) => {
