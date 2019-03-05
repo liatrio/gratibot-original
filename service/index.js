@@ -141,6 +141,7 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
     recognizees.sort( (a, b) => {
       return b.score - a.score;
     });
+    
     //keep the top 10 users
     recognizees = recognizees.slice(0, 10);
     //console.log(recognizees);
