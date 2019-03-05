@@ -47,9 +47,9 @@ This bot demonstrates many of the core features of Botkit:
     -> http://howdy.ai/botkit
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-var env = require('node-env-file');
+/*var env = require('node-env-file');
 env(__dirname + '/.env');
-
+*/
 let mongodb = require("./service/mongo.js");
 let service_obj = require("./service/");
 let service = new service_obj(mongodb);

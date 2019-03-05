@@ -101,9 +101,10 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
   }
   return this.mongodb.recognition.find(filter).then( (response) => {
 
-    //Format for array of objects
+
     //console.log(response);
     var recognizees = [];
+
     for (var i = 0; i < response.length; i++) {
       recognizeeB = response[i];
 
@@ -135,7 +136,6 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
           });
       }
     }
-
     //sort recognizees by score in descending order
     //recognizees.score.sort(function(a, b){return a-b});
     recognizees.sort( (a, b) => {
@@ -143,7 +143,6 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
     });
     //keep the top 10 users
     recognizees = recognizees.slice(0, 10);
-
     //console.log(recognizees);
     return recognizees;
   });
