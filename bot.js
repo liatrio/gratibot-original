@@ -141,7 +141,6 @@ if (process.env.studio_token) {
     console.log('Learn mode https://github.com/howdyai/botkit-cms');
 }
 
-
 function usage_tip() {
     console.log('~~~~~~~~~~');
     console.log('Botkit Starter Kit');
@@ -150,16 +149,3 @@ function usage_tip() {
     console.log('Get Slack app credentials here: https://api.slack.com/apps')
     console.log('~~~~~~~~~~');
 }
-
-service.countRecognitionsGiven('casey', 'usa', 1).then( (response) => {
-    console.log('countRecognitionsGiven1 ' + response);
-});
-service.countRecognitionsGiven('justin', 'usa', 1).then( (response) => {
-    console.log('countRecognitionsGiven2 ' + response);
-});
-
-service.getLeaderboard('usa', 30).then( (response) => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.log(response);
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-});

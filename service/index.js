@@ -26,7 +26,7 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
       channel: channel,
       values: values
     }).then( (response) => {
-      console.log(response);
+      //console.log(response);
       return response;
     });
 }
@@ -50,7 +50,7 @@ service.prototype.countRecognitionsReceived = function(user, timezone = null, da
       }
   }
   return this.mongodb.recognition.count(filter).then( (response) => {
-    console.log(response);
+    //console.log(response);
     return response;
   });
 }
@@ -74,11 +74,10 @@ service.prototype.countRecognitionsGiven = function(user, timezone = null, days 
       }
   }
   return this.mongodb.recognition.count(filter).then( (response) => {
-    console.log(response);
+    //console.log(response);
     return response;
   });
 }
-
 
 /**
 * Calculate the score for the top users for this month.
@@ -112,61 +111,39 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
     for (var i = 0; i < response.length; i++) {
       recognizeeB = response[i];
 
-      console.log('*************************************************');
-      console.log(response);
-      console.log('*************************************************');
-      var recognizer = '';
+      //check if there is a unique recognizee in the current entry, recognizeeB
       if(!recognizees.some( (recognizeeA) => {
+        //recognizee exists in array recognizees so we update that entry's score and increment count
         if(recognizeeA.name == recognizeeB.recognizee) {
+          recognizeeA.count++;
+          recognizerB = recognizeeB.recognizer;
+          //check if there is a unique recognizer in current entry, recognizerB
+          //console.log(recognizeeA);
+          if(!recognizeeA.recognizers.some( (recognizerA) => {
+            if(recognizerA == recognizerB) {
+              return true;
+            }
+          })) {
+            recognizeeA.recognizers.push(recognizerB);
+          }
+          recognizeeA.score = recognizeeA.count - (recognizeeA.recognizers.length);
           return true;
-        }
-        else {
-          
         }
       })) {
         recognizees.push(
           {
             name: recognizeeB.recognizee,
             count: 1,
-            recognizers: recognizeeB.recognizer,
+            recognizers: [recognizeeB.recognizer],
             score: 0,
           });
       }
-      else {
-        //check if recognizer is unique
-        //increment count
-        //update score
-
-
-
-      }
     }
-
-    console.log('---------------------------------------------------------------');
-    console.log(recognizees);
-    console.log('---------------------------------------------------------------');
-    
-    return response;
+    recognizees.splice(0, 1);
+    //console.log(recognizees);
+    return recognizees;
   });
 }
 
-
-
-//service.prototype.getLeaderboard = function(user, days) {
-  /*recogReceived = countRecognitionsReceived(
-  *return mongo.recognition.find({ recognizee:user }).then( (response) => {
-  * console.log(response);
-  * //response[0]
-  * let count = 0;
-  * for(i=0; i<response.length; i++) {
-  *   count++;
-  *   //response[i]
-  * }
-  * console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ' + count);
-  * return response;
-  });
-**/
-//  return Promise.resolve([{user: 'scribbles', score: 1000000}]); // TODO replace with promise which resolves to leaderboard data
-//}
 module.exports = service;
 
