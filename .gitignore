@@ -6,3 +6,4 @@ components/routes/_*
 .nyc_output/
 coverage/
 **/.terraform/
+.data
