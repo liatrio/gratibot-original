@@ -11,7 +11,8 @@ const rank = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10
  * @retrun {object} Promise chain state
  */
 const getLeaderboard = (state) => {
-  return state.service.getLeaderboard(30).then((leaderboard) => {console.debug(leaderboard); return {...state, leaderboard}});
+  console.debug('Get leaderboard data');
+  return state.service.getLeaderboard(30).then((leaderboard) => {return {...state, leaderboard}});
 }
 
 /**
@@ -21,6 +22,7 @@ const getLeaderboard = (state) => {
 * @retrun {object} Promise chain state
 */
 const getUserIcons = (state) => {
+  console.debug('Get user icons');
   var promises = [];
   state.leaderboard.forEach((user) => {
     promises.push(new Promise((resolve, reject) => {
@@ -43,6 +45,7 @@ const getUserIcons = (state) => {
  * @retrun {object} Promise chain state
  */
 const addContentHeading = (state) => {
+  console.debug('Add leaderboard heading');
   state.content.blocks.push(
     {
       type: "section",
@@ -62,6 +65,7 @@ const addContentHeading = (state) => {
  * @retrun {object} Promise chain state
  */
 const addContentUsers = (state) => {
+  console.debug('Add user list as section fields');
   let fields = [];
   state.leaderboard.forEach((user, index) => {
     fields.push({type: 'mrkdwn', text: `*${rank[index]}* <@${user.userID}> *Score:* ${user.score}`});
@@ -77,6 +81,7 @@ const addContentUsers = (state) => {
  * @retrun {object} Promise chain state
  */
 const addContentUsersImage = (state) => {
+  console.debug('Add user list with images');
   state.leaderboard.forEach((user, index) => {
     state.content.blocks.push({
       type: "section",
@@ -87,12 +92,13 @@ const addContentUsersImage = (state) => {
 }
 
 /**
- * Add user list as context (small, light grey) elements to message content
+ * Add user list as context (small, light grey) blocks to message content
  *
  * @param {object} state Promise chain state
  * @retrun {object} Promise chain state
  */
 const addContentUsersContext = (state) => {
+  console.debug('Add user list as context blocks');
   let elements;
   state.leaderboard.forEach((user, index) => {
     state.content.blocks.push({
@@ -113,6 +119,7 @@ const addContentUsersContext = (state) => {
  * @retrun {object} Promise chain state
  */
 const addContentRange = (state) => {
+  console.debug('Add time range');
   state.content.blocks.push(
     {
       "type": "context",
@@ -135,6 +142,7 @@ const addContentRange = (state) => {
  * @retrun {object} Promise chain state
  */
 const addContentButtons = (state) => {
+  console.debug('Add action buttons');
   state.content.blocks.push(
     {
       "type": "actions",
@@ -188,6 +196,7 @@ const addContentButtons = (state) => {
  * @retrun {object} Promise chain state
  */
 const sendReply = (state) => {
+  console.debug('Send reply message');
   state.bot.reply(state.message, state.content);
 }
 
@@ -215,6 +224,10 @@ module.exports = function helper(controller, context) {
     .then(addContentUsersContext)
     .then(addContentRange)
     .then(addContentButtons)
-    .then(sendReply);
+    .then(sendReply)
+    .catch((error) => {
+      console.error('There was an error responding to leaderboard request', error);
+      bot.whisper('There was an error responding to leaderboard request. Check logs for more info');
+    });
   });
 };
