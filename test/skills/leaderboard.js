@@ -21,7 +21,6 @@ describe('leaderboard skill', () => {
     // Test for action buttons
     expect(message.blocks[4].type).to.equal('actions');
     expect(message.blocks[4].elements).to.have.lengthOf(4);
-
   };
   /**
    * Test bot ignores ambiant messages with leaderboard text
@@ -101,25 +100,27 @@ describe('leaderboard skill', () => {
     this.bot = this.controller.spawn({ type: 'slack' });
     const service = new Service({
       recognition: {
-        find: () => {
-          return Promise.resolve([
-            {
-              recognizer : "UC7EHD74L",
-              recognizee : "U99UTM8C8",
-              timestamp : "2019-03-06T18:32:09.154Z",
-              message : ":toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot", "channel" : "CFV0MBLQJ", "values" : [ "gratibot" ],
-            },
-            {
-              recognizer : "UC7EHD74L",
-              recognizee : "U9AGRU64B",
-              timestamp : "2019-03-06T18:32:09.154Z",
-              message : ":toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot", "channel" : "CFV0MBLQJ", "values" : [ "gratibot" ],
-            },
-          ]);
-        }
-      }
+        find: () => Promise.resolve([
+          {
+            recognizer: 'UC7EHD74L',
+            recognizee: 'U99UTM8C8',
+            timestamp: '2019-03-06T18:32:09.154Z',
+            message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
+            channel: 'CFV0MBLQJ',
+            values: ['gratibot'],
+          },
+          {
+            recognizer: 'UC7EHD74L',
+            recognizee: 'U9AGRU64B',
+            timestamp: '2019-03-06T18:32:09.154Z',
+            message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
+            channel: 'CFV0MBLQJ',
+            values: ['gratibot'],
+          },
+        ]),
+      },
     });
-    leaderboardSkill(this.controller, {service});
+    leaderboardSkill(this.controller, { service });
   });
 
   afterEach(() => {

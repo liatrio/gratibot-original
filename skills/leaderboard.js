@@ -12,8 +12,8 @@ const rank = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10
  */
 const getLeaderboard = (state) => {
   console.debug('Get leaderboard data');
-  return state.service.getLeaderboard(30).then((leaderboard) => {return {...state, leaderboard}});
-}
+  return state.service.getLeaderboard(30).then(leaderboard => ({ ...state, leaderboard }));
+};
 
 /**
 * Fetch icons for each user in leaderboard and inject them in state
@@ -23,20 +23,20 @@ const getLeaderboard = (state) => {
 */
 const getUserIcons = (state) => {
   console.debug('Get user icons');
-  var promises = [];
+  const promises = [];
   state.leaderboard.forEach((user) => {
     promises.push(new Promise((resolve, reject) => {
-      state.bot.api.users.info({user: user.userID}, (error, response) => {
+      state.bot.api.users.info({ user: user.userID }, (error, response) => {
         if (error) {
           reject(error);
           return;
         }
         resolve(response.user.profile.image_72);
-      })
+      });
     }));
   });
-  return Promise.all(promises).then((icons) => {return {...state, icons}});
-}
+  return Promise.all(promises).then(icons => ({ ...state, icons }));
+};
 
 /**
  * Add heading to message content
@@ -48,15 +48,15 @@ const addContentHeading = (state) => {
   console.debug('Add leaderboard heading');
   state.content.blocks.push(
     {
-      type: "section",
+      type: 'section',
       text: {
-        type: "mrkdwn",
-        text: "*Leaderboard*"
-      }
-    }
+        type: 'mrkdwn',
+        text: '*Leaderboard*',
+      },
+    },
   );
   return state;
-}
+};
 
 /**
  * Add user list as fields (two condensed columns) to message content
@@ -64,15 +64,20 @@ const addContentHeading = (state) => {
  * @param {object} state Promise chain state
  * @retrun {object} Promise chain state
  */
+/*
 const addContentUsers = (state) => {
   console.debug('Add user list as section fields');
-  let fields = [];
+  const fields = [];
   state.leaderboard.forEach((user, index) => {
-    fields.push({type: 'mrkdwn', text: `*${rank[index]}* <@${user.userID}> *Score:* ${user.score}`});
+    fields.push({
+      type: 'mrkdwn',
+      text: `*${rank[index]}* <@${user.userID}> *Score:* ${user.score}`
+    });
   });
-  state.content.blocks.push({type: 'section', fields: fields});
+  state.content.blocks.push({ type: 'section', fields });
   return state;
-}
+};
+*/
 
 /**
  * Add user list including images (very large) to message content
@@ -80,16 +85,22 @@ const addContentUsers = (state) => {
  * @param {object} state Promise chain state
  * @retrun {object} Promise chain state
  */
+/*
 const addContentUsersImage = (state) => {
   console.debug('Add user list with images');
   state.leaderboard.forEach((user, index) => {
     state.content.blocks.push({
-      type: "section",
-      text: { type: "mrkdwn", text: `*${rank[index]} <@${user.userID}>*\n *Score:* ${user.score}`},
-      accessory: { "type": "image", "image_url": state.icons[index], "alt_text": `<@${user.userID}>` }});
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*${rank[index]} <@${user.userID}>*\n *Score:* ${user.score}`
+      },
+      accessory: { type: 'image', image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+    });
   });
   return state;
-}
+};
+*/
 
 /**
  * Add user list as context (small, light grey) blocks to message content
@@ -99,18 +110,17 @@ const addContentUsersImage = (state) => {
  */
 const addContentUsersContext = (state) => {
   console.debug('Add user list as context blocks');
-  let elements;
   state.leaderboard.forEach((user, index) => {
     state.content.blocks.push({
       type: 'context',
       elements: [
-        { type: "image", image_url: state.icons[index], alt_text: `<@${user.userID}>` },
-        { type: "mrkdwn", text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n`},
-      ]
+        { type: 'image', image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+        { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n` },
+      ],
     });
   });
   return state;
-}
+};
 
 /**
  * Add currently displayed time range to message content as context element
@@ -122,18 +132,18 @@ const addContentRange = (state) => {
   console.debug('Add time range');
   state.content.blocks.push(
     {
-      "type": "context",
-      "elements": [
+      type: 'context',
+      elements: [
         {
-          "type": "plain_text",
-          "text": "Last 30 days",
-          "emoji": true
-        }
-      ]
-    }
+          type: 'plain_text',
+          text: 'Last 30 days',
+          emoji: true,
+        },
+      ],
+    },
   );
   return state;
-}
+};
 
 /**
  * Add buttons to select time range to message content
@@ -145,49 +155,49 @@ const addContentButtons = (state) => {
   console.debug('Add action buttons');
   state.content.blocks.push(
     {
-      "type": "actions",
-      "elements": [
+      type: 'actions',
+      elements: [
         {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "emoji": true,
-            "text": "Today"
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Today',
           },
-          "value": "1"
+          value: '1',
         },
         {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "emoji": true,
-            "text": "Week"
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Week',
           },
-          "value": "7"
+          value: '7',
         },
         {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "emoji": true,
-            "text": "Month"
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Month',
           },
-          "value": "30"
+          value: '30',
         },
         {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "emoji": true,
-            "text": "Year"
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Year',
           },
-          "value": "365"
-        }
-      ]
-    }
+          value: '365',
+        },
+      ],
+    },
   );
   return state;
-}
+};
 
 /**
  * Send message containing state content
@@ -198,7 +208,7 @@ const addContentButtons = (state) => {
 const sendReply = (state) => {
   console.debug('Send reply message');
   state.bot.reply(state.message, state.content);
-}
+};
 
 /**
  * Create bot listeners to handle leaderboard request and actions
@@ -208,26 +218,27 @@ const sendReply = (state) => {
  */
 module.exports = function helper(controller, context) {
   const { service } = context;
-  const emoji = process.env.EMOJI || ':toast:';
-  const rank = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
   controller.hears(['leaderboard'], 'direct_message, direct_mention', (bot, message) => {
     console.debug('Received leaderboard message/mention');
-    let content = {blocks: []};
-    let state = {bot, content};
+    const content = { blocks: [] };
 
-    Promise.resolve({service, bot, message, content})
-    .then(getLeaderboard)
-    .then(getUserIcons)
-    .then(addContentHeading)
-    // .then(addContentUsers) // display users as
+    Promise.resolve({
+      service, bot, message, content,
+    })
+      .then(getLeaderboard)
+      .then(getUserIcons)
+      .then(addContentHeading)
+    // These are alternative layouts for the user list. I am leaving them here
+    // intentionally in case we decide to use them later
+    // .then(addContentUsers)
     // .then(addContentUsersImage)
-    .then(addContentUsersContext)
-    .then(addContentRange)
-    .then(addContentButtons)
-    .then(sendReply)
-    .catch((error) => {
-      console.error('There was an error responding to leaderboard request', error);
-      bot.whisper('There was an error responding to leaderboard request. Check logs for more info');
-    });
+      .then(addContentUsersContext)
+      .then(addContentRange)
+      .then(addContentButtons)
+      .then(sendReply)
+      .catch((error) => {
+        console.error('There was an error responding to leaderboard request', error);
+        bot.whisper('There was an error responding to leaderboard request. Check logs for more info');
+      });
   });
 };
