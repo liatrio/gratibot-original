@@ -3,7 +3,6 @@ Module for responding to balance message.
 */
 
 module.exports = function balance(controller, context) {
-  //const emoji = process.env.emoji || ':toast:';
   const emoji = context.emoji;
   const service = context.service;
   controller.hears(['balance'], 'direct_message, direct_mention', (bot, message) => {

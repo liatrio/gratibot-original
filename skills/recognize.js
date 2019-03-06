@@ -2,7 +2,6 @@
 Module for detecting recognition
 */
 
-//const emoji = process.env.emoji || ':toast:';
 const minLength = 20;
 const failImageURL = 'https://media0.giphy.com/media/ac7MA7r5IMYda/giphy-downsized.gif?cid=6104955e5c763d742e4f524832508da2';
 
