@@ -11,7 +11,7 @@ const rank = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10
  * @retrun {object} Promise chain state
  */
 const getLeaderboard = (state) => {
-  return state.service.getLeaderboard(30).then((leaderboard) => {return {...state, leaderboard}});
+  return state.service.getLeaderboard(30).then((leaderboard) => {console.debug(leaderboard); return {...state, leaderboard}});
 }
 
 /**
@@ -24,7 +24,7 @@ const getUserIcons = (state) => {
   var promises = [];
   state.leaderboard.forEach((user) => {
     promises.push(new Promise((resolve, reject) => {
-      state.bot.api.users.info({user: user.user}, (error, response) => {
+      state.bot.api.users.info({user: user.userID}, (error, response) => {
         if (error) {
           reject(error);
           return;
@@ -64,7 +64,7 @@ const addContentHeading = (state) => {
 const addContentUsers = (state) => {
   let fields = [];
   state.leaderboard.forEach((user, index) => {
-    fields.push({type: 'mrkdwn', text: `*${rank[index]}* <@${user.user}> *Score:* ${user.score}`});
+    fields.push({type: 'mrkdwn', text: `*${rank[index]}* <@${user.userID}> *Score:* ${user.score}`});
   });
   state.content.blocks.push({type: 'section', fields: fields});
   return state;
@@ -80,8 +80,8 @@ const addContentUsersImage = (state) => {
   state.leaderboard.forEach((user, index) => {
     state.content.blocks.push({
       type: "section",
-      text: { type: "mrkdwn", text: `*${rank[index]} <@${user.user}>*\n *Score:* ${user.score}`},
-      accessory: { "type": "image", "image_url": state.icons[index], "alt_text": `<@${user.user}>` }});
+      text: { type: "mrkdwn", text: `*${rank[index]} <@${user.userID}>*\n *Score:* ${user.score}`},
+      accessory: { "type": "image", "image_url": state.icons[index], "alt_text": `<@${user.userID}>` }});
   });
   return state;
 }
@@ -95,10 +95,13 @@ const addContentUsersImage = (state) => {
 const addContentUsersContext = (state) => {
   let elements;
   state.leaderboard.forEach((user, index) => {
-    elements = [];
-    elements.push({ type: "image", image_url: state.icons[index], alt_text: `<@${user.user}>` });
-    elements.push({ type: "mrkdwn", text: `<@${user.user}> *${rank[index]} - Score:* ${user.score}\n`});
-    state.content.blocks.push({ type: 'context', elements: elements });
+    state.content.blocks.push({
+      type: 'context',
+      elements: [
+        { type: "image", image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+        { type: "mrkdwn", text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n`},
+      ]
+    });
   });
   return state;
 }
