@@ -57,17 +57,73 @@ describe('service index', () => {
       expect(service.countRecognitionsReceived('user', 'timezone', 1)).to.be.an.instanceof(Promise);
     });
   });
-});
 
-// will fix other tests in another ticket
-/*
   describe('get leaderboard', () => {
-    it('not cause exception', () => {
-      expect(() => { service.getLeaderboard(30); }).to.not.throw();
+    it('returns a promise', () => {
+      const mongodb = {
+        recognition: {
+          find: (document) => {
+            const response = [document];
+            return Promise.resolve(response);
+          },
+        },
+      };
+      const service = new ServiceObj(mongodb);
+      it('not cause exception', () => {
+        expect(() => { service.getLeaderboard('timezone', 1); }).to.not.throw();
+      });
+      it('returns promise', () => {
+        expect(service.getLeaderboard('timezone', 1)).to.be.an.instanceof(Promise);
+      });
     });
 
-    it('returns promise', () => {
-      expect(service.getLeaderboard(30)).to.be.an.instanceof(Promise);
+    it('aggregates data from response', () => {
+      const mongodb = {
+        recognition: {
+          find: (document) => {
+            const response = [document];
+            return Promise.resolve(response);
+          },
+        },
+      };
+      const service = new ServiceObj(mongodb);
+
+      /**
+      * Situations tested:
+      * - Adding a new unique user to the list of recognizees
+      * - Updating a unique user with a unique recognizee
+      * - Updating a unique user with a recognizee it already has
+      */
+      const response = [
+        {
+          recognizee: 'USERID1',
+          recognizer: 'USERID2',
+        },
+        {
+          recognizee: 'USERID1',
+          recognizer: 'USERID3',
+        },
+        {
+          recognizee: 'USERID1',
+          recognizer: 'USERID2',
+        },
+      ];
+
+      const responseReturn = [
+        {
+          name: 'USERID1',
+          count: 3,
+          recognizers: ['USERID3', 'USERID2'],
+          score: 1,
+        },
+      ];
+
+      it('not cause exception', () => {
+        expect(() => { service.aggregateData(response); }).to.not.throw();
+      });
+      it('returns promise', () => {
+        expect(service.aggregateData(response)).to.equal(responseReturn);
+      });
     });
   });
-  */
+});

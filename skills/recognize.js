@@ -100,7 +100,7 @@ const sendRecognition = (state) => {
       }
     });
     state.service.countRecognitionsReceived(u).then((response) => {
-      const numberRecieved = response;
+      const numberRecieved = response + state.emojiCount;
       state.bot.say({
         text: `You just got recognized by <@${message.user}> in <#${message.channel}> Your total ${emoji} balance = ${numberRecieved} !\n>>>${message.text}`,
         channel: u,
@@ -126,7 +126,8 @@ const whisperReply = (state) => {
   });
 };
 
-module.exports = function listener(controller, service) {
+module.exports = function listener(controller, context) {
+  const { service } = context;
   controller.hears([emoji], 'ambient', (bot, message) => {
     const statePromise = Promise.resolve({
       bot,
