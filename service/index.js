@@ -101,46 +101,48 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
       }
   }
   return this.mongodb.recognition.find(filter).then( (response) => {
-
-    var recognizees = [];
-    for (var i = 0; i < response.length; i++) {
-      recognizeeB = response[i];
-      //check if there is a unique recognizee in the current entry, recognizeeB
-      if(!recognizees.some( (recognizeeA) => {
-        //recognizee exists in array recognizees so we update that entry's score and increment count
-        if(recognizeeA.userID == recognizeeB.recognizee) {
-          recognizeeA.count++;
-          recognizerB = recognizeeB.recognizer;
-          //check if there is a unique recognizer in current entry, recognizerB
-          if(!recognizeeA.recognizers.some( (recognizerA) => {
-            if(recognizerA == recognizerB) {
-              return true;
-            }
-          })) {
-            recognizeeA.recognizers.push(recognizerB);
-          }
-          recognizeeA.score = recognizeeA.count - (recognizeeA.recognizers.length);
-          return true;
-        }
-      })) {
-        recognizees.push(
-          {
-            userID: recognizeeB.recognizee,
-            count: 1,
-            recognizers: [recognizeeB.recognizer],
-            score: 0,
-          });
-      }
-    }
-    //sort recognizees by score in descending order
-    recognizees.sort( (a, b) => {
-      return b.score - a.score;
-    });
-
-    //keep the top 10 users
-    recognizees = recognizees.slice(0, 10);
-    return recognizees;
+    return aggregateData(response);
   });
+}
+
+function aggregateData(response) {
+  var recognizees = [];
+  for (var i = 0; i < response.length; i++) {
+    recognizeeB = response[i];
+    //check if there is a unique recognizee in the current entry, recognizeeB
+    if(!recognizees.some( (recognizeeA) => {
+      //recognizee exists in array recognizees so we update that entry's score and increment count
+      if(recognizeeA.userID == recognizeeB.recognizee) {
+        recognizeeA.count++;
+        recognizerB = recognizeeB.recognizer;
+        //check if there is a unique recognizer in current entry, recognizerB
+        if(!recognizeeA.recognizers.some( (recognizerA) => {
+          if(recognizerA == recognizerB) {
+            return true;
+          }
+        })) {
+          recognizeeA.recognizers.push(recognizerB);
+        }
+        recognizeeA.score = recognizeeA.count - (recognizeeA.recognizers.length);
+        return true;
+      }
+    })) {
+      recognizees.push(
+        {
+          userID: recognizeeB.recognizee,
+          count: 1,
+          recognizers: [recognizeeB.recognizer],
+          score: 0,
+        });
+    }
+  }
+  //sort recognizees by score in descending order
+  recognizees.sort( (a, b) => {
+    return b.score - a.score;
+  });
+  //keep the top 10 users
+  recognizees = recognizees.slice(0, 10);
+  return recognizees;
 }
 
 module.exports = service;
