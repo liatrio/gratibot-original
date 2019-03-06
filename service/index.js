@@ -27,7 +27,7 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
       values: values
     }).then( (response) => {
 
-      
+
 
       console.log(response);
       return response;
@@ -90,21 +90,8 @@ service.prototype.countRecognitionsGiven = function(user, timezone = null, days 
 * @param {int} days Number of days to calculate leaderboard for
 * @return Promise which resolves to leaderboard data. Array [{user: 'USERNAME', score: SCORE_VALUE}]
 **/
-//service.prototype.getLeaderboard = function(user, days) {
-  /*recogReceived = countRecognitionsReceived(
-  *return mongo.recognition.find({ recognizee:user }).then( (response) => {
-  * console.log(response);
-  * //response[0]
-  * let count = 0;
-  * for(i=0; i<response.length; i++) {
-  *   count++;
-  *   //response[i]
-  * }
-  * console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ' + count);
-  * return response;
-  });
-**/
-//  return Promise.resolve([{user: 'scribbles', score: 1000000}]); // TODO replace with promise which resolves to leaderboard data
-//}
-module.exports = service;
+service.prototype.getLeaderboard = function(user, days) {
+  return Promise.resolve([{user: "UC7EHD74L", score: 1000000},{user: "U9AGRU64B", score: 0},{user: "U99UTM8C8", score: 0}]);
+};
 
+module.exports = service;
