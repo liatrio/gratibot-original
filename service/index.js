@@ -15,7 +15,6 @@ function service(mongodb) {
 * @return Promise resolves to result from mongodb insert
 **/
 service.prototype.giveRecognition = function(recognizer, recognizee, message, channel, values) {
-    //write in the current timestamp
     let timestamp = new Date();
     return this.mongodb.recognition.insert(
     {
@@ -36,6 +35,7 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
 *
 * @param {string} user Name of Slack user recognized
 * @param {int} days Number of days to calculate count for
+* @param {string} timezone Timezone for a user to calculate days
 * @return Promise which resolves to result from mongodb count query
 **/
 service.prototype.countRecognitionsReceived = function(user, timezone = null, days = null) {
@@ -60,6 +60,7 @@ service.prototype.countRecognitionsReceived = function(user, timezone = null, da
 *
 * @param {string} user Name of Slack user recognizing others
 * @param {int} days Number of days to calculate count for
+* @param {string} timezone Timezone for a user to calculate days
 * @return Promise which resolves to result from mongodb count query
 **/
 service.prototype.countRecognitionsGiven = function(user, timezone = null, days = null) {
@@ -84,7 +85,8 @@ service.prototype.countRecognitionsGiven = function(user, timezone = null, days 
 * Score = (Number of recognitions given to user) - (Number of recognitions given to user)/(Distinct number of users that have recognized user)
 *
 * @param {int} days Number of days to calculate leaderboard for
-* @return Promise which resolves to leaderboard data. Array [{user: 'USERNAME', score: SCORE_VALUE}]
+* @param {string} timezone Timezone for a user to calculate days
+* @return Promise which resolves to leaderboard data. Array [{userID: 'USERNAME_ID', count: COUNT_VALUE, recognizers: ['RECOGNIZER_VALUE'], score: SCORE_VALUE}]
 **/
 service.prototype.getLeaderboard = function(timezone = null, days = null) {
   //get only the entries from the specifc day from midnight
@@ -99,51 +101,48 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
       }
   }
   return this.mongodb.recognition.find(filter).then( (response) => {
-
-    //Format for array of objects
-    var recognizees = [{
-      name: '',
-      count: '',
-      recognizers: [],
-      score: 0,
-    }];
-
-    for (var i = 0; i < response.length; i++) {
-      recognizeeB = response[i];
-
-      //check if there is a unique recognizee in the current entry, recognizeeB
-      if(!recognizees.some( (recognizeeA) => {
-        //recognizee exists in array recognizees so we update that entry's score and increment count
-        if(recognizeeA.name == recognizeeB.recognizee) {
-          recognizeeA.count++;
-          recognizerB = recognizeeB.recognizer;
-          //check if there is a unique recognizer in current entry, recognizerB
-          //console.log(recognizeeA);
-          if(!recognizeeA.recognizers.some( (recognizerA) => {
-            if(recognizerA == recognizerB) {
-              return true;
-            }
-          })) {
-            recognizeeA.recognizers.push(recognizerB);
-          }
-          recognizeeA.score = recognizeeA.count - (recognizeeA.recognizers.length);
-          return true;
-        }
-      })) {
-        recognizees.push(
-          {
-            name: recognizeeB.recognizee,
-            count: 1,
-            recognizers: [recognizeeB.recognizer],
-            score: 0,
-          });
-      }
-    }
-    recognizees.splice(0, 1);
-    //console.log(recognizees);
-    return recognizees;
+    return aggregateData(response);
   });
 }
 
-module.exports = service;
+function aggregateData(response) {
+  var recognizees = [];
+  for (var i = 0; i < response.length; i++) {
+    recognizeeB = response[i];
+    //check if there is a unique recognizee in the current entry, recognizeeB
+    if(!recognizees.some( (recognizeeA) => {
+      //recognizee exists in array recognizees so we update that entry's score and increment count
+      if(recognizeeA.userID == recognizeeB.recognizee) {
+        recognizeeA.count++;
+        recognizerB = recognizeeB.recognizer;
+        //check if there is a unique recognizer in current entry, recognizerB
+        if(!recognizeeA.recognizers.some( (recognizerA) => {
+          if(recognizerA == recognizerB) {
+            return true;
+          }
+        })) {
+          recognizeeA.recognizers.push(recognizerB);
+        }
+        recognizeeA.score = recognizeeA.count - (recognizeeA.recognizers.length);
+        return true;
+      }
+    })) {
+      recognizees.push(
+        {
+          userID: recognizeeB.recognizee,
+          count: 1,
+          recognizers: [recognizeeB.recognizer],
+          score: 0,
+        });
+    }
+  }
+  //sort recognizees by score in descending order
+  recognizees.sort( (a, b) => {
+    return b.score - a.score;
+  });
+  //keep the top 10 users
+  recognizees = recognizees.slice(0, 10);
+  return recognizees;
+}
 
+module.exports = service;
