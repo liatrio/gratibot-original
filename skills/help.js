@@ -1,8 +1,9 @@
 /*
 Module for defining help command for Gratibot.
 */
-module.exports = function helper(controller) {
-  const emoji = process.env.EMOJI || ':toast:';
+module.exports = function helper(controller, context) {
+  //const emoji = process.env.emoji || ':toast:';
+  const emoji = context.emoji;
   controller.hears(['help'], 'direct_message, direct_mention', (bot, message) => {
     bot.whisper(message, {
       attachments: [

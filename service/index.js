@@ -123,7 +123,7 @@ function aggregateData(response) {
         })) {
           recognizeeA.recognizers.push(recognizerB);
         }
-        recognizeeA.score = recognizeeA.count - (recognizeeA.recognizers.length);
+        recognizeeA.score = recognizeeA.count - (recognizeeA.count/recognizeeA.recognizers.length);
         return true;
       }
     })) {

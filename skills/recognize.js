@@ -2,13 +2,13 @@
 Module for detecting recognition
 */
 
-const emoji = process.env.EMOJI || ':toast:';
+//const emoji = process.env.emoji || ':toast:';
 const minLength = 20;
 const failImageURL = 'https://media0.giphy.com/media/ac7MA7r5IMYda/giphy-downsized.gif?cid=6104955e5c763d742e4f524832508da2';
 
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
-const emojiRegex = new RegExp(emoji, 'g');
+
 const exemptUsers = ['U037FL37G'];
 
 const extractUsers = (state) => {
@@ -44,6 +44,8 @@ const checkForSelfRecognition = (state) => {
 const checkMessageLength = (state) => {
   // Strips users _ emoji out of message
   state.full_message = state.message.text;
+  const emoji = state.emoji;
+  const emojiRegex = new RegExp(emoji, 'g');
   const trimmedMessage = state.full_message.replace(/\s*<.*?>\s*/g, '').replace(emojiRegex, '');
 
   if (trimmedMessage.length < minLength) {
@@ -67,6 +69,8 @@ const checkMessageLength = (state) => {
 
 const checkRecognitionCount = (state) => {
   const { message } = state;
+  const emoji = state.emoji;
+  const emojiRegex = new RegExp(emoji, 'g');
 
   state.emojiCount = (message.text.match(emojiRegex) || []).length;
 
@@ -90,6 +94,7 @@ const checkRecognitionCount = (state) => {
 };
 
 const sendRecognition = (state) => {
+  const emoji = state.emoji;
   const { message } = state;
   const tags = (message.text.match(tagRegex) || []).map(tag => tag.slice(1));
   state.users.forEach((u) => {
@@ -102,7 +107,7 @@ const sendRecognition = (state) => {
     state.service.countRecognitionsReceived(u).then((response) => {
       const numberRecieved = response + state.emojiCount;
       state.bot.say({
-        text: `You just got recognized by <@${message.user}> in <#${message.channel}> Your total ${emoji} balance = ${numberRecieved} !\n>>>${message.text}`,
+        text: `You just got recognized by <@${message.user}> in <#${message.channel}> Your total ${emoji} balance = ${numberRecieved + state.emojiCount} !\n>>>${message.text}`,
         channel: u,
       });
     });
@@ -112,6 +117,7 @@ const sendRecognition = (state) => {
 
 const whisperReply = (state) => {
   // TODO: add # left to give for today in the whisper below
+  const emoji = state.emoji;
   const reply = state.userIsExempt ? `Your recognition has been sent. Well done! You have infinite ${emoji} to give out`
     : `Your recognition has been sent. Well done! You have ${5 - state.recognitionsGivenAfter} ${emoji} remaining`;
 
@@ -127,12 +133,14 @@ const whisperReply = (state) => {
 };
 
 module.exports = function listener(controller, context) {
-  const { service } = context;
+  const emoji = context.emoji;
+  const service = context.service;
   controller.hears([emoji], 'ambient', (bot, message) => {
     const statePromise = Promise.resolve({
       bot,
       message,
       service,
+      emoji,
     });
 
     return statePromise
