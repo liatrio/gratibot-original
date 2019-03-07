@@ -53,12 +53,12 @@ env(__dirname + '/.env');
 let mongodb = require("./service/mongo.js");
 let service_obj = require("./service/");
 let service = new service_obj(mongodb);
+let emoji = process.env.emoji || ':toast:';
 
 if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
   usage_tip();
   // process.exit(1);
 }
-
 
 var Botkit = require('botkit');
 var debug = require('debug')('botkit:main');
@@ -103,7 +103,10 @@ require(__dirname + '/components/user_registration.js')(controller);
 // Send an onboarding message when a new team joins
 require(__dirname + '/components/onboarding.js')(controller);
 
-const context = {service};
+const context = {
+    service: service, 
+    emoji: emoji,
+};
 
 var normalizedPath = require("path").join(__dirname, "skills");
 require("fs").readdirSync(normalizedPath).forEach(function(file) {
