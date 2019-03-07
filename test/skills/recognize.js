@@ -286,7 +286,10 @@ describe('recognize skill', () => {
       },
     };
     const service = new ServiceObj(mongodb);
-    const context = { service };
+    const context = {
+      service,
+      emoji: ':toast:',
+    };
     recognizeSkill(this.controller, context);
   });
   afterEach(() => {

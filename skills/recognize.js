@@ -49,7 +49,7 @@ const checkMessageLength = (state) => {
 
   if (trimmedMessage.length < minLength) {
     return new Promise((resolve, reject) => {
-      state.bot.startConversation(state.message, (err, convo) => {
+      state.bot.startConversation(message, (err, convo) => {
         convo.ask({ ephemeral: true, text: `Please provide more details why you are giving ${emoji}` }, (response, newConvo) => {
           if (err) {
             reject(err);
@@ -130,7 +130,7 @@ const whisperReply = (state) => {
 };
 
 module.exports = function listener(controller, context) {
-  const {emoji, service} = context;
+  const { emoji, service } = context;
   controller.hears([emoji], 'ambient', (bot, message) => {
     const statePromise = Promise.resolve({
       bot,
