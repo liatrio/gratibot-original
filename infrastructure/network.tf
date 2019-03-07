@@ -69,7 +69,7 @@ data "aws_route53_zone" "domain" {
 
 resource "aws_route53_record" "gratibot" {
   zone_id = "${data.aws_route53_zone.domain.zone_id}"
-  name    = "dev.gratibot.liatr.io"
+  name    = "${var.app_host}.${var.domain}"
   type    = "A"
 
   alias {
