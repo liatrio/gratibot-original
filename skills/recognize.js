@@ -85,7 +85,7 @@ const checkRecognitionCount = (state) => {
         state.recognitionsGivenAfter = state.countRecognitionsGivenBefore
           + (state.users.length * state.emojiCount);
         state.userIsExempt = exemptUsers.some(exemptUser => exemptUser === recognizer);
-        if (state.recognitionsGivenAfter <= 100 || state.userIsExempt) {
+        if (state.recognitionsGivenAfter <= 5 || state.userIsExempt) {
           resolve(state);
         } else {
           reject(new Error(`Sorry <@${message.user}> a maximum of 5 ${emoji} are allowed per day`));
@@ -105,12 +105,12 @@ const sendRecognitionDatabase = (state) => {
         for (let i = 0; i < state.emojiCount; i += 1) {
           state.service.giveRecognition(message.user, response.user.id,
             state.full_message, message.channel, tags).then(() => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(state);
-              }
-            });
+            if (err) {
+              reject(err);
+            } else {
+              resolve(state);
+            }
+          });
         }
       });
     });
