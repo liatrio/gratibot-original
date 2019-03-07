@@ -11,6 +11,7 @@ const tagRegex = /#(\S+)/g;
 const exemptUsers = ['U037FL37G'];
 
 const extractUsers = (state) => {
+  console.debug('Check if the message had a user to recognize');
   state.users = state.message.text.match(userRegex);
   // make sure there was a mention in the message
   if (!state.users) {
@@ -24,6 +25,7 @@ const extractUsers = (state) => {
 
 const checkForSelfRecognition = (state) => {
   // block giving recognition to myself
+  console.debug('Check if the user recognized himself');
   if (state.users.indexOf(state.message.user) >= 0) {
     const reply = {
       text: `Nice try <@${state.message.user}>`,
@@ -42,6 +44,7 @@ const checkForSelfRecognition = (state) => {
 
 const checkMessageLength = (state) => {
   // Strips users _ emoji out of message
+  console.debug('Checking the length of the recognition message');
   state.full_message = state.message.text;
   const { message, emoji } = state;
   const emojiRegex = new RegExp(emoji, 'g');
@@ -67,6 +70,7 @@ const checkMessageLength = (state) => {
 };
 
 const checkRecognitionCount = (state) => {
+  console.debug('Checking total recognitions for users');
   const { message, emoji } = state;
   const emojiRegex = new RegExp(emoji, 'g');
 
@@ -81,7 +85,7 @@ const checkRecognitionCount = (state) => {
         state.recognitionsGivenAfter = state.countRecognitionsGivenBefore
           + (state.users.length * state.emojiCount);
         state.userIsExempt = exemptUsers.some(exemptUser => exemptUser === recognizer);
-        if (state.recognitionsGivenAfter <= 5 || state.userIsExempt) {
+        if (state.recognitionsGivenAfter <= 100 || state.userIsExempt) {
           resolve(state);
         } else {
           reject(new Error(`Sorry <@${message.user}> a maximum of 5 ${emoji} are allowed per day`));
@@ -91,20 +95,36 @@ const checkRecognitionCount = (state) => {
   });
 };
 
-const sendRecognition = (state) => {
-  const { message, emoji } = state;
+const sendRecognitionDatabase = (state) => {
+  console.debug('Sending data to the database');
+  const { message } = state;
   const tags = (message.text.match(tagRegex) || []).map(tag => tag.slice(1));
-  state.users.forEach((u) => {
-    state.bot.api.users.info({ user: u }, (err, response) => {
-      for (let i = 0; i < state.emojiCount; i += 1) {
-        state.service.giveRecognition(message.user, response.user.id,
-          state.full_message, message.channel, tags);
-      }
+  return new Promise((resolve, reject) => {
+    state.users.forEach((u) => {
+      state.bot.api.users.info({ user: u }, (err, response) => {
+        for (let i = 0; i < state.emojiCount; i += 1) {
+          state.service.giveRecognition(message.user, response.user.id,
+            state.full_message, message.channel, tags).then(() => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(state);
+              }
+            });
+        }
+      });
     });
+  });
+};
+
+const sendRecognitionSlack = (state) => {
+  console.debug('Sending recognition data to slack');
+  const { message, emoji } = state;
+  state.users.forEach((u) => {
     state.service.countRecognitionsReceived(u).then((response) => {
-      const numberRecieved = response + state.emojiCount;
+      const numberRecieved = response;
       state.bot.say({
-        text: `You just got recognized by <@${message.user}> in <#${message.channel}> Your total ${emoji} balance = ${numberRecieved + state.emojiCount} !\n>>>${message.text}`,
+        text: `You just got recognized by <@${message.user}> in <#${message.channel}> Your total ${emoji} balance = ${numberRecieved} !\n>>>${message.text}`,
         channel: u,
       });
     });
@@ -114,6 +134,7 @@ const sendRecognition = (state) => {
 
 const whisperReply = (state) => {
   // TODO: add # left to give for today in the whisper below
+  console.debug('Sending a whisper to the slack user who made the recognition');
   const { emoji } = state;
   const reply = state.userIsExempt ? `Your recognition has been sent. Well done! You have infinite ${emoji} to give out`
     : `Your recognition has been sent. Well done! You have ${5 - state.recognitionsGivenAfter} ${emoji} remaining`;
@@ -130,6 +151,7 @@ const whisperReply = (state) => {
 };
 
 module.exports = function listener(controller, context) {
+  console.debug('Received a recognition for a user');
   const { emoji, service } = context;
   controller.hears([emoji], 'ambient', (bot, message) => {
     const statePromise = Promise.resolve({
@@ -144,7 +166,8 @@ module.exports = function listener(controller, context) {
       .then(checkForSelfRecognition)
       .then(checkMessageLength)
       .then(checkRecognitionCount)
-      .then(sendRecognition)
+      .then(sendRecognitionDatabase)
+      .then(sendRecognitionSlack)
       .then(whisperReply)
       .catch(error => bot.whisper(message, error.message));
   });
