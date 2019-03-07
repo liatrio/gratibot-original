@@ -134,10 +134,7 @@ const sendRecognitionSlack = (state) => {
 
 const whisperReply = (state) => {
   // TODO: add # left to give for today in the whisper below
-<<<<<<< HEAD
   console.debug('Sending a whisper to the slack user who made the recognition');
-=======
->>>>>>> 40801a3cdb08551f07f1ab32089ef6148f92cb41
   const { emoji } = state;
   const reply = state.userIsExempt ? `Your recognition has been sent. Well done! You have infinite ${emoji} to give out`
     : `Your recognition has been sent. Well done! You have ${5 - state.recognitionsGivenAfter} ${emoji} remaining`;
@@ -154,10 +151,7 @@ const whisperReply = (state) => {
 };
 
 module.exports = function listener(controller, context) {
-<<<<<<< HEAD
   console.debug('Received a recognition for a user');
-=======
->>>>>>> 40801a3cdb08551f07f1ab32089ef6148f92cb41
   const { emoji, service } = context;
   controller.hears([emoji], 'ambient', (bot, message) => {
     const statePromise = Promise.resolve({
