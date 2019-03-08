@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE='liatrio/gratibot'
-        SLACK_CHANNEL="chatops-dev"
+        SLACK_CHANNEL="flywheel"
         APP_DOMAIN='liatr.io'
     }
     stages {
