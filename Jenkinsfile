@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE='liatrio/gratibot'
-        SLACK_CHANNEL="chatops-dev"
+        SLACK_CHANNEL="flywheel"
         APP_DOMAIN='liatr.io'
     }
     stages {
@@ -74,7 +74,6 @@ pipeline {
             steps {
                 slackSend channel: "#${env.SLACK_CHANNEL}", message: "Promote gratibot: (<${env.BUILD_URL}|Go to job to approve/deny>)"
                 input('Proceed to production?')
-
                   withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-SVC-Jenkins-prod-dev' ]]) {
                     sh """
                     cd infrastructure
