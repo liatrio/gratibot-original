@@ -24,7 +24,7 @@ const getLeaderboard = (state) => {
 const getUserIcons = (state) => {
   console.debug('Get user icons');
   const promises = [];
-  state.leaderboard.forEach((user) => {
+  state.leaderboard.recognizees.forEach((user) => {
     promises.push(new Promise((resolve, reject) => {
       state.bot.api.users.info({ user: user.userID }, (error, response) => {
         if (error) {
@@ -110,7 +110,7 @@ const addContentUsersImage = (state) => {
  */
 const addContentUsersContext = (state) => {
   console.debug('Add user list as context blocks');
-  state.leaderboard.forEach((user, index) => {
+  state.leaderboard.recognizees.forEach((user, index) => {
     state.content.blocks.push({
       type: 'context',
       elements: [

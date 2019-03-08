@@ -101,11 +101,52 @@ service.prototype.getLeaderboard = function(timezone = null, days = null) {
       }
   }
   return this.mongodb.recognition.find(filter).then( (response) => {
-    return aggregateData(response);
+    return { recognizees: aggregateDataRecognizees(response), recognizers: aggregateDataRecognizers(response) };
   });
 }
 
-function aggregateData(response) {
+function aggregateDataRecognizers(response) {
+  var recognizers = [];
+  for (var i = 0; i < response.length; i++) {
+    recognizerB = response[i];
+    //check if there is a unique recognizer in the current entry, recognizerB
+    if(!recognizers.some( (recognizerA) => {
+      //recognizer exists in array recognizers so we update that entry's score and increment count
+      if(recognizerA.userID == recognizerB.recognizer) {
+        recognizerA.count++;
+        recognizerBRecognizer = recognizerB.recognizer;
+        //check if there is a unique recognizer in current entry, recognizerBRecognizer
+        if(!recognizerA.recognized.some( (recognizerARecognizer) => {
+          if(recognizerARecognizer == recognizerBRecognizer) {
+            return true;
+          }
+        })) {
+          recognizerA.recognized.push(recognizerBRecognizer);
+        }
+        //add 1 to the score so the score is not 0 when a user only has recognitions from 1 person
+        recognizerA.score = recognizerA.count - (recognizerA.count/recognizerA.recognized.length) + 1;
+        return true;
+      }
+    })) {
+      recognizers.push(
+        {
+          userID: recognizerB.recognizer,
+          count: 1,
+          recognized: [recognizerB.recognizee],
+          score: 1,
+        });
+    }
+  }
+  //sort recognizees by score in descending order
+  recognizers.sort( (a, b) => {
+    return b.score - a.score;
+  });
+  //keep the top 10 users
+  recognizers = recognizers.slice(0, 10);
+  return recognizers;
+}
+
+function aggregateDataRecognizees(response) {
   var recognizees = [];
   for (var i = 0; i < response.length; i++) {
     recognizeeB = response[i];
@@ -123,7 +164,7 @@ function aggregateData(response) {
         })) {
           recognizeeA.recognizers.push(recognizerB);
         }
-        recognizeeA.score = recognizeeA.count - (recognizeeA.count/recognizeeA.recognizers.length);
+        recognizeeA.score = recognizeeA.count - (recognizeeA.count/recognizeeA.recognizers.length) + 1;
         return true;
       }
     })) {
@@ -132,7 +173,7 @@ function aggregateData(response) {
           userID: recognizeeB.recognizee,
           count: 1,
           recognizers: [recognizeeB.recognizer],
-          score: 0,
+          score: 1,
         });
     }
   }
