@@ -102,7 +102,23 @@ describe('leaderboard skill', () => {
       recognition: {
         find: () => Promise.resolve([
           {
-            recognizer: 'UC7EHD74L',
+            recognizer: 'U99UTM8C8',
+            recognizee: 'U9AGRU64B',
+            timestamp: '2019-03-06T18:32:09.154Z',
+            message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
+            channel: 'CFV0MBLQJ',
+            values: ['gratibot'],
+          },
+          {
+            recognizer: 'U99UTM8C8',
+            recognizee: 'U9AGRU64B',
+            timestamp: '2019-03-06T18:32:09.154Z',
+            message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
+            channel: 'CFV0MBLQJ',
+            values: ['gratibot'],
+          },
+          {
+            recognizer: 'U9AGRU64B',
             recognizee: 'U99UTM8C8',
             timestamp: '2019-03-06T18:32:09.154Z',
             message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
@@ -110,8 +126,8 @@ describe('leaderboard skill', () => {
             values: ['gratibot'],
           },
           {
-            recognizer: 'UC7EHD74L',
-            recognizee: 'U9AGRU64B',
+            recognizer: 'U9AGRU64B',
+            recognizee: 'U99UTM8C8',
             timestamp: '2019-03-06T18:32:09.154Z',
             message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
             channel: 'CFV0MBLQJ',

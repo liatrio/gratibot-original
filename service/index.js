@@ -186,7 +186,7 @@ function aggregateDataRecognizees(response) {
   });
   //keep the top 10 users
   recognizees = recognizees.slice(0, 10);
-  return {recognizees: recognizees, recognizers: recognizees};
+  return recognizees;
 }
 
 module.exports = service;
