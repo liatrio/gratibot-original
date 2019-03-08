@@ -40,3 +40,7 @@ variable "fargate_memory" {
 variable "domain" {
   description = "Domain to be used on the ALB for the bot"
 }
+
+variable "app_host" {
+  description = "DNS hostname"
+}
