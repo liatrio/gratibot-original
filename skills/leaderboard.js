@@ -29,9 +29,10 @@ const getUserIcons = (state) => {
     .map(user => user.userID))];
   users.forEach((user) => {
     promises.push(new Promise((resolve, reject) => {
-      state.bot.api.users.info({ user: user.userID }, (error, response) => {
+      state.bot.api.users.info({ user: user }, (error, response) => {
         if (error) {
-          reject(error);
+          console.error(`Error fetching user info for '${user}'`, error);
+          resolve(error);
           return;
         }
         resolve(response.user.profile.image_72);
@@ -269,7 +270,7 @@ module.exports = function helper(controller, context) {
       .then(sendReply)
       .catch((error) => {
         console.error('There was an error responding to leaderboard request', error);
-        bot.whisper('There was an error responding to leaderboard request. Check logs for more info');
+        bot.whisper(message, 'There was an error responding to leaderboard request. Check logs for more info');
       });
   });
 };
