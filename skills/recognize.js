@@ -30,21 +30,21 @@ const checkForSelfRecognition = (state) => {
     const reply = {
       blocks: [
         {
-          type: "section",
+          type: 'section',
           text: {
-            type: "mrkdwn",
+            type: 'mrkdwn',
             text: `Nice try <@${state.message.user}>`,
-          }
+          },
         },
         {
-          type: "image",
+          type: 'image',
           title: {
-            type: "plain_text",
-            text: "fail",
-            emoji: true
+            type: 'plain_text',
+            text: 'fail',
+            emoji: true,
           },
           image_url: failImageURL,
-          alt_text: "fail",
+          alt_text: 'fail',
         },
       ],
     };
