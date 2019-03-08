@@ -35,11 +35,17 @@ const getUserIcons = (state) => {
           resolve(error);
           return;
         }
-        resolve(response.user.profile.image_72);
+        resolve({user: user, icon: response.user.profile.image_72});
       });
     }));
   });
-  return Promise.all(promises).then(icons => ({ ...state, icons }));
+  return Promise.all(promises).then(result => {
+    let icons = {};
+    result.forEach((userIcon) => {
+      icons[userIcon.user] = userIcon.icon;
+    });
+    return { ...state, icons };
+  });
 };
 
 /**
@@ -100,7 +106,7 @@ const addContentUsersImage = (state) => {
         type: 'mrkdwn',
         text: `*${rank[index]} <@${user.userID}>*\n *Score:* ${user.score}`
       },
-      accessory: { type: 'image', image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+      accessory: { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
     });
   });
   return state;
@@ -127,7 +133,7 @@ const addContentUsersContext = (state) => {
     state.content.blocks.push({
       type: 'context',
       elements: [
-        { type: 'image', image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+        { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
         { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n` },
       ],
     });
@@ -144,7 +150,7 @@ const addContentUsersContext = (state) => {
     state.content.blocks.push({
       type: 'context',
       elements: [
-        { type: 'image', image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+        { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
         { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n` },
       ],
     });
