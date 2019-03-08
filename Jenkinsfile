@@ -58,7 +58,7 @@ pipeline {
                     sh """
                     cd infrastructure
                     terraform init -input=false -no-color -force-copy -reconfigure
-                    terraform plan -out=plan_nonprod_gratibot -input=false -no-color -var app_image=docker.io/${IMAGE}:${GIT_COMMIT[0..10]} -var domain=${APP_DOMAIN} -var app_host='dev.gratibot'
+                    terraform plan -out=plan_nonprod_gratibot -input=false -no-color -var app_image=docker.io/${IMAGE}:${GIT_COMMIT[0..10]} -var domain='liatr.io' -var app_host='dev.gratibot'
                     terraform apply -input=false plan_nonprod_gratibot -no-color
                     """
                 }
@@ -78,7 +78,7 @@ pipeline {
                     sh """
                     cd infrastructure
                     terraform init -input=false -no-color -force-copy -reconfigure -backend-config="bucket=slackbots-prod-tfstates"
-                    terraform plan -out=plan_prod_gratibot -input=false -no-color -var app_image=docker.io/${IMAGE}:${GIT_COMMIT[0..10]} -var domain=${APP_DOMAIN} -var app_host='gratibot'
+                    terraform plan -out=plan_prod_gratibot -input=false -no-color -var app_image=docker.io/${IMAGE}:${GIT_COMMIT[0..10]} -var domain='prod.liatr.io' -var app_host='gratibot'
                     terraform apply -input=false plan_prod_gratibot -no-color
                     """
                 }

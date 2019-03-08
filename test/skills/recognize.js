@@ -46,7 +46,7 @@ describe('recognize skill', () => {
       ];
 
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Nice try <@ALICE>');
+        expect(message.blocks[0].text.text).to.equal('Nice try <@ALICE>');
       });
     });
 
@@ -286,7 +286,10 @@ describe('recognize skill', () => {
       },
     };
     const service = new ServiceObj(mongodb);
-    const context = { service };
+    const context = {
+      service,
+      emoji: ':toast:',
+    };
     recognizeSkill(this.controller, context);
   });
   afterEach(() => {
