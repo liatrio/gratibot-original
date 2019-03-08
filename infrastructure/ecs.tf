@@ -12,6 +12,10 @@ data "aws_iam_role" "ecs_task_execution" {
   name = "ecsTaskExecutionRole"
 }
 
+resource "aws_cloudwatch_log_group" "gratibot_log" {
+  name = "Gratibot"
+}
+
 resource "aws_ecs_task_definition" "gratibot" {
   family                   = "gratibot"
   network_mode             = "awsvpc"
@@ -29,7 +33,7 @@ resource "aws_ecs_task_definition" "gratibot" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "Gratibot",
+          "awslogs-group": "${aws_cloudwatch_log_group.gratibot_log.name}",
           "awslogs-region": "${var.aws_region}",
           "awslogs-stream-prefix": "gratibot"
         }
