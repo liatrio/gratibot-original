@@ -86,7 +86,10 @@ service.prototype.countRecognitionsGiven = function(user, timezone = null, days 
 *
 * @param {int} days Number of days to calculate leaderboard for
 * @param {string} timezone Timezone for a user to calculate days
-* @return Promise which resolves to leaderboard data. Array [{userID: 'USERNAME_ID', count: COUNT_VALUE, recognizers: ['RECOGNIZER_VALUE'], score: SCORE_VALUE}]
+* @return Promise which resolves to an object which contains a list of recognizees and recognizers.
+*
+* Each leaderboard list has the following structure
+* Array [{userID: 'USERNAME_ID', count: COUNT_VALUE, recognizers: ['RECOGNIZER_VALUE'], score: SCORE_VALUE}]
 **/
 service.prototype.getLeaderboard = function(timezone = null, days = null) {
   //get only the entries from the specifc day from midnight
@@ -142,7 +145,7 @@ function aggregateData(response) {
   });
   //keep the top 10 users
   recognizees = recognizees.slice(0, 10);
-  return recognizees;
+  return {recognizees: recognizees, recognizers: recognizees};
 }
 
 module.exports = service;
