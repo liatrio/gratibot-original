@@ -29,7 +29,7 @@ const getUserIcons = (state) => {
     .map(user => user.userID))];
   users.forEach((user) => {
     promises.push(new Promise((resolve, reject) => {
-      state.bot.api.users.info({ user: user }, (error, response) => {
+      state.bot.api.users.info({ user }, (error, response) => {
         if (error) {
           console.error(`Error fetching user info for '${user}'`, error);
           resolve(error);
