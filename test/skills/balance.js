@@ -47,7 +47,11 @@ describe('balance skill', () => {
       debug: false,
     });
     this.bot = this.controller.spawn({ type: 'slack' });
-    balanceSkill(this.controller, { service });
+    const context = {
+      service,
+      emoji: ':toast:',
+    };
+    balanceSkill(this.controller, context);
   });
   afterEach(() => {
     this.controller.shutdown();

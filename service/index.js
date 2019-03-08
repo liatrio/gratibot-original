@@ -15,19 +15,19 @@ function service(mongodb) {
 * @return Promise resolves to result from mongodb insert
 **/
 service.prototype.giveRecognition = function(recognizer, recognizee, message, channel, values) {
-    let timestamp = new Date();
-    return this.mongodb.recognition.insert(
-    {
-      recognizer: recognizer,
-      recognizee: recognizee,
-      timestamp: timestamp,
-      message: message,
-      channel: channel,
-      values: values
-    }).then( (response) => {
-      //console.log(response);
-      return response;
-    });
+  console.debug('Sending a recognition given to database');
+  let timestamp = new Date();
+  return this.mongodb.recognition.insert(
+  {
+    recognizer: recognizer,
+    recognizee: recognizee,
+    timestamp: timestamp,
+    message: message,
+    channel: channel,
+    values: values
+  }).then( (response) => {
+    return response;
+  });
 }
 
 /**
@@ -39,6 +39,7 @@ service.prototype.giveRecognition = function(recognizer, recognizee, message, ch
 * @return Promise which resolves to result from mongodb count query
 **/
 service.prototype.countRecognitionsReceived = function(user, timezone = null, days = null) {
+  console.debug('Getting the recognitions a user received');
   let filter = {recognizee:user}
   if(days && timezone) {
     let userDate = moment(Date.now()).tz(timezone);
@@ -50,7 +51,6 @@ service.prototype.countRecognitionsReceived = function(user, timezone = null, da
       }
   }
   return this.mongodb.recognition.count(filter).then( (response) => {
-    //console.log(response);
     return response;
   });
 }
@@ -64,6 +64,7 @@ service.prototype.countRecognitionsReceived = function(user, timezone = null, da
 * @return Promise which resolves to result from mongodb count query
 **/
 service.prototype.countRecognitionsGiven = function(user, timezone = null, days = null) {
+  console.debug('Getting the recognitions a user gave');
   let filter = {recognizer:user}
   if(days && timezone) {
     let userDate = moment(Date.now()).tz(timezone);
@@ -75,7 +76,6 @@ service.prototype.countRecognitionsGiven = function(user, timezone = null, days 
       }
   }
   return this.mongodb.recognition.count(filter).then( (response) => {
-    //console.log(response);
     return response;
   });
 }
@@ -123,7 +123,7 @@ function aggregateData(response) {
         })) {
           recognizeeA.recognizers.push(recognizerB);
         }
-        recognizeeA.score = recognizeeA.count - (recognizeeA.recognizers.length);
+        recognizeeA.score = recognizeeA.count - (recognizeeA.count/recognizeeA.recognizers.length);
         return true;
       }
     })) {

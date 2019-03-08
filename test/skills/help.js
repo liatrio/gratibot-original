@@ -43,17 +43,7 @@ describe('help skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.text).to.be.an('undefined');
-        expect(message.attachments).to.have.lengthOf(1);
-
-        const attachment = message.attachments[0];
-        expect(attachment.color).to.equal('#36a64f');
-        expect(attachment.title).to.equal('Gratibot Repo\n');
-        expect(attachment.pretext).to.equal("\nHey there :wave: Here's some help with what :toast: can do.\n");
-        expect(attachment.fields).to.have.lengthOf(2);
-        expect(attachment.fields[0].title).to.equal('Commands');
-        expect(attachment.fields[0].value).to.have.string('Specify a user and the amount');
-        expect(attachment.fields[1].title).to.equal('Details');
-        expect(attachment.fields[1].value).to.have.string('Tag your message with');
+        expect(message.blocks).to.have.lengthOf(18);
       });
     });
   });
@@ -76,17 +66,7 @@ describe('help skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.text).to.be.an('undefined');
-        expect(message.attachments).to.have.lengthOf(1);
-
-        const attachment = message.attachments[0];
-        expect(attachment.color).to.equal('#36a64f');
-        expect(attachment.title).to.equal('Gratibot Repo\n');
-        expect(attachment.pretext).to.equal("\nHey there :wave: Here's some help with what :toast: can do.\n");
-        expect(attachment.fields).to.have.lengthOf(2);
-        expect(attachment.fields[0].title).to.equal('Commands');
-        expect(attachment.fields[0].value).to.have.string('Specify a user and the amount');
-        expect(attachment.fields[1].title).to.equal('Details');
-        expect(attachment.fields[1].value).to.have.string('Tag your message with');
+        expect(message.blocks).to.have.lengthOf(18);
       });
     });
   });
@@ -96,7 +76,10 @@ describe('help skill', () => {
       debug: false,
     });
     this.bot = this.controller.spawn({ type: 'slack' });
-    helpSkill(this.controller);
+    const context = {
+      emoji: ':toast:',
+    };
+    helpSkill(this.controller, context);
   });
   afterEach(() => {
     this.controller.shutdown();
