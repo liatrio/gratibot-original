@@ -28,11 +28,23 @@ const checkForSelfRecognition = (state) => {
   console.debug('Check if the user recognized himself');
   if (state.users.indexOf(state.message.user) >= 0) {
     const reply = {
-      text: `Nice try <@${state.message.user}>`,
-      attachments: [
+      blocks: [
         {
-          title: 'fail',
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Nice try <@${state.message.user}>`,
+          },
+        },
+        {
+          type: 'image',
+          title: {
+            type: 'plain_text',
+            text: 'fail',
+            emoji: true,
+          },
           image_url: failImageURL,
+          alt_text: 'fail',
         },
       ],
     };

@@ -53,7 +53,7 @@ env(__dirname + '/.env');
 let mongodb = require("./service/mongo.js");
 let service_obj = require("./service/");
 let service = new service_obj(mongodb);
-let emoji = process.env.emoji || ':toast:';
+let emoji = process.env.emoji || ':fistbump:';
 
 if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
   usage_tip();

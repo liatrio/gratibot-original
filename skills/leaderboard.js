@@ -207,7 +207,7 @@ const addContentButtons = (state) => {
  */
 const sendReply = (state) => {
   console.debug('Send reply message');
-  state.bot.reply(state.message, state.content);
+  state.bot.whisper(state.message, state.content);
 };
 
 /**
@@ -218,7 +218,7 @@ const sendReply = (state) => {
  */
 module.exports = function helper(controller, context) {
   const { service } = context;
-  controller.hears(['leaderboard'], 'direct_message, direct_mention', (bot, message) => {
+  controller.hears(['leader'], 'direct_message, direct_mention', (bot, message) => {
     console.debug('Received leaderboard message/mention');
     const content = { blocks: [] };
 

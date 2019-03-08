@@ -46,7 +46,7 @@ describe('recognize skill', () => {
       ];
 
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Nice try <@ALICE>');
+        expect(message.blocks[0].text.text).to.equal('Nice try <@ALICE>');
       });
     });
 
