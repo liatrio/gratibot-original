@@ -24,7 +24,10 @@ const getLeaderboard = (state) => {
 const getUserIcons = (state) => {
   console.debug('Get user icons');
   const promises = [];
-  state.leaderboard.forEach((user) => {
+  const users = [...new Set(state.leaderboard.recognizers
+    .concat(state.leaderboard.recognizees)
+    .map(user => user.userID))];
+  users.forEach((user) => {
     promises.push(new Promise((resolve, reject) => {
       state.bot.api.users.info({ user: user.userID }, (error, response) => {
         if (error) {
@@ -49,6 +52,7 @@ const addContentHeading = (state) => {
   state.content.blocks.push(
     {
       type: 'section',
+      block_id: 'heading',
       text: {
         type: 'mrkdwn',
         text: '*Leaderboard*',
@@ -110,7 +114,32 @@ const addContentUsersImage = (state) => {
  */
 const addContentUsersContext = (state) => {
   console.debug('Add user list as context blocks');
-  state.leaderboard.forEach((user, index) => {
+  state.content.blocks.push({
+    type: 'section',
+    block_id: 'recognizersTitle',
+    text: {
+      type: 'mrkdwn',
+      text: '*Top Givers*',
+    },
+  });
+  state.leaderboard.recognizers.forEach((user, index) => {
+    state.content.blocks.push({
+      type: 'context',
+      elements: [
+        { type: 'image', image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+        { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n` },
+      ],
+    });
+  });
+  state.content.blocks.push({
+    type: 'section',
+    block_id: 'recognizeesTitle',
+    text: {
+      type: 'mrkdwn',
+      text: '*Top Receivers*',
+    },
+  });
+  state.leaderboard.recognizees.forEach((user, index) => {
     state.content.blocks.push({
       type: 'context',
       elements: [
@@ -133,6 +162,7 @@ const addContentRange = (state) => {
   state.content.blocks.push(
     {
       type: 'context',
+      block_id: 'timeRange',
       elements: [
         {
           type: 'plain_text',
@@ -156,6 +186,7 @@ const addContentButtons = (state) => {
   state.content.blocks.push(
     {
       type: 'actions',
+      block_id: 'timeRangeButtons',
       elements: [
         {
           type: 'button',
