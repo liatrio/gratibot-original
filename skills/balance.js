@@ -16,7 +16,7 @@ module.exports = function balance(controller, context) {
 
       Promise.all([receivedPromise, givenPromise]).then((responses) => {
         const remaining = Math.max(0, 5 - responses[1]);
-        bot.reply(message, `You have received ${responses[0]} ${emoji} and you have ${remaining} ${emoji} remaining to give away today`);
+        bot.whisper(message, `You have received ${responses[0]} ${emoji} and you have ${remaining} ${emoji} remaining to give away today`);
       });
     });
   });
