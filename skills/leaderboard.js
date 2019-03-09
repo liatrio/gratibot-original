@@ -12,7 +12,7 @@ const rank = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10
  */
 const getLeaderboard = (state) => {
   console.debug('Get leaderboard data');
-  return state.service.getLeaderboard(30).then(leaderboard => ({ ...state, leaderboard }));
+  return state.service.getLeaderboard('America/Los_Angeles', state.dateRange).then(leaderboard => ({ ...state, leaderboard }));
 };
 
 /**
@@ -177,7 +177,7 @@ const addContentRange = (state) => {
       elements: [
         {
           type: 'plain_text',
-          text: 'Last 30 days',
+          text: `Last ${state.dateRange} days`,
           emoji: true,
         },
       ],
@@ -192,54 +192,54 @@ const addContentRange = (state) => {
  * @param {object} state Promise chain state
  * @retrun {object} Promise chain state
  */
-// const addContentButtons = (state) => {
-//   console.debug('Add action buttons');
-//   state.content.blocks.push(
-//     {
-//       type: 'actions',
-//       block_id: 'timeRangeButtons',
-//       elements: [
-//         {
-//           type: 'button',
-//           text: {
-//             type: 'plain_text',
-//             emoji: true,
-//             text: 'Today',
-//           },
-//           value: '1',
-//         },
-//         {
-//           type: 'button',
-//           text: {
-//             type: 'plain_text',
-//             emoji: true,
-//             text: 'Week',
-//           },
-//           value: '7',
-//         },
-//         {
-//           type: 'button',
-//           text: {
-//             type: 'plain_text',
-//             emoji: true,
-//             text: 'Month',
-//           },
-//           value: '30',
-//         },
-//         {
-//           type: 'button',
-//           text: {
-//             type: 'plain_text',
-//             emoji: true,
-//             text: 'Year',
-//           },
-//           value: '365',
-//         },
-//       ],
-//     },
-//   );
-//   return state;
-// };
+const addContentButtons = (state) => {
+  console.debug('Add action buttons');
+  state.content.blocks.push(
+    {
+      type: 'actions',
+      block_id: 'timeRangeButtons',
+      elements: [
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Today',
+          },
+          value: '1',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Week',
+          },
+          value: '7',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Month',
+          },
+          value: '30',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Year',
+          },
+          value: '365',
+        },
+      ],
+    },
+  );
+  return state;
+};
 
 /**
  * Send message containing state content
@@ -250,6 +250,11 @@ const addContentRange = (state) => {
 const sendReply = (state) => {
   console.debug('Send reply message');
   state.bot.whisper(state.message, state.content);
+};
+
+const sendReplyInteractive = (state) => {
+  console.debug('Send reply message');
+  state.bot.replyInteractive(state.message, state.content);
 };
 
 /**
@@ -265,7 +270,7 @@ module.exports = function helper(controller, context) {
     const content = { blocks: [] };
 
     Promise.resolve({
-      service, bot, message, content,
+      service, bot, message, content, dateRange: 30,
     })
       .then(getLeaderboard)
       .then(getUserIcons)
@@ -276,8 +281,36 @@ module.exports = function helper(controller, context) {
     // .then(addContentUsersImage)
       .then(addContentUsersContext)
       .then(addContentRange)
-      // .then(addContentButtons)
+      .then(addContentButtons)
       .then(sendReply)
+      .catch((error) => {
+        console.error('There was an error responding to leaderboard request', error);
+        bot.whisper(message, 'There was an error responding to leaderboard request. Check logs for more info');
+      });
+  });
+
+  controller.on('block_actions', (bot, message) => {
+    if (message.actions[0].block_id !== 'timeRangeButtons') {
+      return;
+    }
+
+    console.debug('Received leaderboard message/mention');
+    const content = { blocks: [] };
+
+    Promise.resolve({
+      service, bot, message, content, dateRange: message.actions[0].value,
+    })
+      .then(getLeaderboard)
+      .then(getUserIcons)
+      .then(addContentHeading)
+    // These are alternative layouts for the user list. I am leaving them here
+    // intentionally in case we decide to use them later
+    // .then(addContentUsers)
+    // .then(addContentUsersImage)
+      .then(addContentUsersContext)
+      .then(addContentRange)
+      .then(addContentButtons)
+      .then(sendReplyInteractive)
       .catch((error) => {
         console.error('There was an error responding to leaderboard request', error);
         bot.whisper(message, 'There was an error responding to leaderboard request. Check logs for more info');
