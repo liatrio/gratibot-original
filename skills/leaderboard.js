@@ -192,54 +192,54 @@ const addContentRange = (state) => {
  * @param {object} state Promise chain state
  * @retrun {object} Promise chain state
  */
-const addContentButtons = (state) => {
-  console.debug('Add action buttons');
-  state.content.blocks.push(
-    {
-      type: 'actions',
-      block_id: 'timeRangeButtons',
-      elements: [
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Today',
-          },
-          value: '1',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Week',
-          },
-          value: '7',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Month',
-          },
-          value: '30',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Year',
-          },
-          value: '365',
-        },
-      ],
-    },
-  );
-  return state;
-};
+// const addContentButtons = (state) => {
+//   console.debug('Add action buttons');
+//   state.content.blocks.push(
+//     {
+//       type: 'actions',
+//       block_id: 'timeRangeButtons',
+//       elements: [
+//         {
+//           type: 'button',
+//           text: {
+//             type: 'plain_text',
+//             emoji: true,
+//             text: 'Today',
+//           },
+//           value: '1',
+//         },
+//         {
+//           type: 'button',
+//           text: {
+//             type: 'plain_text',
+//             emoji: true,
+//             text: 'Week',
+//           },
+//           value: '7',
+//         },
+//         {
+//           type: 'button',
+//           text: {
+//             type: 'plain_text',
+//             emoji: true,
+//             text: 'Month',
+//           },
+//           value: '30',
+//         },
+//         {
+//           type: 'button',
+//           text: {
+//             type: 'plain_text',
+//             emoji: true,
+//             text: 'Year',
+//           },
+//           value: '365',
+//         },
+//       ],
+//     },
+//   );
+//   return state;
+// };
 
 /**
  * Send message containing state content
@@ -276,7 +276,7 @@ module.exports = function helper(controller, context) {
     // .then(addContentUsersImage)
       .then(addContentUsersContext)
       .then(addContentRange)
-      .then(addContentButtons)
+      // .then(addContentButtons)
       .then(sendReply)
       .catch((error) => {
         console.error('There was an error responding to leaderboard request', error);

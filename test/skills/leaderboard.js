@@ -13,14 +13,14 @@ describe('leaderboard skill', () => {
     // test message is only visible to user
     expect(message.ephemeral).to.be.true;
     // test message block structure
-    expect(message.blocks).to.have.lengthOf(9);
+    expect(message.blocks).to.have.lengthOf(8);
     expect(message.blocks[0].block_id).to.equal('heading');
     expect(message.blocks[1].block_id).to.equal('recognizersTitle');
     // 2x user blocks
     expect(message.blocks[4].block_id).to.equal('recognizeesTitle');
     // 2x user blocks
     expect(message.blocks[7].block_id).to.equal('timeRange');
-    expect(message.blocks[8].block_id).to.equal('timeRangeButtons');
+    // expect(message.blocks[8].block_id).to.equal('timeRangeButtons');
   };
   /**
    * Test bot ignores ambiant messages with leaderboard text
