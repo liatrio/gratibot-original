@@ -10,17 +10,17 @@ const Service = require('../../service');
 describe('leaderboard skill', () => {
   const assertLeaderboardMessage = (message) => {
     expect(message.text).to.be.an('undefined');
-    // Test for correct number of blocks: heading, 2x users, time range, buttons
-    expect(message.blocks).to.have.lengthOf(5);
-    // Test for leaderboard heading block
-    expect(message.blocks[0].type).to.equal('section');
-    expect(message.blocks[0].text.text).to.equal('*Leaderboard*');
-    // Test for time range
-    expect(message.blocks[3].type).to.equal('context');
-    expect(message.blocks[3].elements[0].text).to.equal('Last 30 days');
-    // Test for action buttons
-    expect(message.blocks[4].type).to.equal('actions');
-    expect(message.blocks[4].elements).to.have.lengthOf(4);
+    // test message is only visible to user
+    expect(message.ephemeral).to.be.true;
+    // test message block structure
+    expect(message.blocks).to.have.lengthOf(8);
+    expect(message.blocks[0].block_id).to.equal('heading');
+    expect(message.blocks[1].block_id).to.equal('recognizersTitle');
+    // 2x user blocks
+    expect(message.blocks[4].block_id).to.equal('recognizeesTitle');
+    // 2x user blocks
+    expect(message.blocks[7].block_id).to.equal('timeRange');
+    // expect(message.blocks[8].block_id).to.equal('timeRangeButtons');
   };
   /**
    * Test bot ignores ambiant messages with leaderboard text
@@ -102,7 +102,23 @@ describe('leaderboard skill', () => {
       recognition: {
         find: () => Promise.resolve([
           {
-            recognizer: 'UC7EHD74L',
+            recognizer: 'U99UTM8C8',
+            recognizee: 'U9AGRU64B',
+            timestamp: '2019-03-06T18:32:09.154Z',
+            message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
+            channel: 'CFV0MBLQJ',
+            values: ['gratibot'],
+          },
+          {
+            recognizer: 'U99UTM8C8',
+            recognizee: 'U9AGRU64B',
+            timestamp: '2019-03-06T18:32:09.154Z',
+            message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
+            channel: 'CFV0MBLQJ',
+            values: ['gratibot'],
+          },
+          {
+            recognizer: 'U9AGRU64B',
             recognizee: 'U99UTM8C8',
             timestamp: '2019-03-06T18:32:09.154Z',
             message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
@@ -110,8 +126,8 @@ describe('leaderboard skill', () => {
             values: ['gratibot'],
           },
           {
-            recognizer: 'UC7EHD74L',
-            recognizee: 'U9AGRU64B',
+            recognizer: 'U9AGRU64B',
+            recognizee: 'U99UTM8C8',
             timestamp: '2019-03-06T18:32:09.154Z',
             message: ':toast: :toast: <@U99UTM8C8> <@U9AGRU64B> Good job creating gratibot!!! #gratibot',
             channel: 'CFV0MBLQJ',

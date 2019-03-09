@@ -24,18 +24,28 @@ const getLeaderboard = (state) => {
 const getUserIcons = (state) => {
   console.debug('Get user icons');
   const promises = [];
-  state.leaderboard.recognizees.forEach((user) => {
+  const users = [...new Set(state.leaderboard.recognizers
+    .concat(state.leaderboard.recognizees)
+    .map(user => user.userID))];
+  users.forEach((user) => {
     promises.push(new Promise((resolve, reject) => {
-      state.bot.api.users.info({ user: user.userID }, (error, response) => {
+      state.bot.api.users.info({ user }, (error, response) => {
         if (error) {
-          reject(error);
+          console.error(`Error fetching user info for '${user}'`, error);
+          resolve(error);
           return;
         }
-        resolve(response.user.profile.image_72);
+        resolve({ user, icon: response.user.profile.image_72 });
       });
     }));
   });
-  return Promise.all(promises).then(icons => ({ ...state, icons }));
+  return Promise.all(promises).then((result) => {
+    const icons = {};
+    result.forEach((userIcon) => {
+      icons[userIcon.user] = userIcon.icon;
+    });
+    return { ...state, icons };
+  });
 };
 
 /**
@@ -49,6 +59,7 @@ const addContentHeading = (state) => {
   state.content.blocks.push(
     {
       type: 'section',
+      block_id: 'heading',
       text: {
         type: 'mrkdwn',
         text: '*Leaderboard*',
@@ -95,7 +106,11 @@ const addContentUsersImage = (state) => {
         type: 'mrkdwn',
         text: `*${rank[index]} <@${user.userID}>*\n *Score:* ${user.score}`
       },
-      accessory: { type: 'image', image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+      accessory: {
+        type: 'image',
+        image_url: state.icons[user.userID],
+        alt_text: `<@${user.userID}>`
+      },
     });
   });
   return state;
@@ -110,11 +125,36 @@ const addContentUsersImage = (state) => {
  */
 const addContentUsersContext = (state) => {
   console.debug('Add user list as context blocks');
+  state.content.blocks.push({
+    type: 'section',
+    block_id: 'recognizersTitle',
+    text: {
+      type: 'mrkdwn',
+      text: '*Top Givers*',
+    },
+  });
+  state.leaderboard.recognizers.forEach((user, index) => {
+    state.content.blocks.push({
+      type: 'context',
+      elements: [
+        { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
+        { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n` },
+      ],
+    });
+  });
+  state.content.blocks.push({
+    type: 'section',
+    block_id: 'recognizeesTitle',
+    text: {
+      type: 'mrkdwn',
+      text: '*Top Receivers*',
+    },
+  });
   state.leaderboard.recognizees.forEach((user, index) => {
     state.content.blocks.push({
       type: 'context',
       elements: [
-        { type: 'image', image_url: state.icons[index], alt_text: `<@${user.userID}>` },
+        { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
         { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n` },
       ],
     });
@@ -133,6 +173,7 @@ const addContentRange = (state) => {
   state.content.blocks.push(
     {
       type: 'context',
+      block_id: 'timeRange',
       elements: [
         {
           type: 'plain_text',
@@ -151,53 +192,54 @@ const addContentRange = (state) => {
  * @param {object} state Promise chain state
  * @retrun {object} Promise chain state
  */
-const addContentButtons = (state) => {
-  console.debug('Add action buttons');
-  state.content.blocks.push(
-    {
-      type: 'actions',
-      elements: [
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Today',
-          },
-          value: '1',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Week',
-          },
-          value: '7',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Month',
-          },
-          value: '30',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Year',
-          },
-          value: '365',
-        },
-      ],
-    },
-  );
-  return state;
-};
+// const addContentButtons = (state) => {
+//   console.debug('Add action buttons');
+//   state.content.blocks.push(
+//     {
+//       type: 'actions',
+//       block_id: 'timeRangeButtons',
+//       elements: [
+//         {
+//           type: 'button',
+//           text: {
+//             type: 'plain_text',
+//             emoji: true,
+//             text: 'Today',
+//           },
+//           value: '1',
+//         },
+//         {
+//           type: 'button',
+//           text: {
+//             type: 'plain_text',
+//             emoji: true,
+//             text: 'Week',
+//           },
+//           value: '7',
+//         },
+//         {
+//           type: 'button',
+//           text: {
+//             type: 'plain_text',
+//             emoji: true,
+//             text: 'Month',
+//           },
+//           value: '30',
+//         },
+//         {
+//           type: 'button',
+//           text: {
+//             type: 'plain_text',
+//             emoji: true,
+//             text: 'Year',
+//           },
+//           value: '365',
+//         },
+//       ],
+//     },
+//   );
+//   return state;
+// };
 
 /**
  * Send message containing state content
@@ -234,11 +276,11 @@ module.exports = function helper(controller, context) {
     // .then(addContentUsersImage)
       .then(addContentUsersContext)
       .then(addContentRange)
-      .then(addContentButtons)
+      // .then(addContentButtons)
       .then(sendReply)
       .catch((error) => {
         console.error('There was an error responding to leaderboard request', error);
-        bot.whisper('There was an error responding to leaderboard request. Check logs for more info');
+        bot.whisper(message, 'There was an error responding to leaderboard request. Check logs for more info');
       });
   });
 };
