@@ -38,7 +38,7 @@ describe('balance skill', () => {
       ];
 
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('You have received 100 :toast: and you have 2 :toast: remaining to give away today');
+        expect(message.text).to.equal('You have received `100` and you have `2` left to give away today');
       });
     });
   });
@@ -50,6 +50,7 @@ describe('balance skill', () => {
     const context = {
       service,
       emoji: ':toast:',
+      exemptUsers: [],
     };
     balanceSkill(this.controller, context);
   });

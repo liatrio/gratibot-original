@@ -8,8 +8,6 @@ const failImageURL = 'https://media0.giphy.com/media/ac7MA7r5IMYda/giphy-downsiz
 const userRegex = /<@([a-zA-Z0-9]+)>/g;
 const tagRegex = /#(\S+)/g;
 
-const exemptUsers = ['U037FL37G'];
-
 const extractUsers = (state) => {
   console.debug('Check if the message had a user to recognize');
   state.users = state.message.text.match(userRegex);
@@ -83,7 +81,7 @@ const checkMessageLength = (state) => {
 
 const checkRecognitionCount = (state) => {
   console.debug('Checking total recognitions for users');
-  const { message, emoji } = state;
+  const { message, emoji, exemptUsers } = state;
   const emojiRegex = new RegExp(emoji, 'g');
 
   state.emojiCount = (message.text.match(emojiRegex) || []).length;
@@ -131,12 +129,12 @@ const sendRecognitionDatabase = (state) => {
 
 const sendRecognitionSlack = (state) => {
   console.debug('Sending recognition data to slack');
-  const { message, emoji } = state;
+  const { message } = state;
   state.users.forEach((u) => {
     state.service.countRecognitionsReceived(u).then((response) => {
       const numberRecieved = response;
       state.bot.say({
-        text: `You just got recognized by <@${message.user}> in <#${message.channel}> Your total ${emoji} balance = ${numberRecieved + state.emojiCount} !\n>>>${message.text}`,
+        text: `You just got recognized by <@${message.user}> in <#${message.channel}> and your new balance is \`${numberRecieved}\`\n>>>${message.text}`,
         channel: u,
       });
     });
@@ -147,9 +145,8 @@ const sendRecognitionSlack = (state) => {
 const whisperReply = (state) => {
   // TODO: add # left to give for today in the whisper below
   console.debug('Sending a whisper to the slack user who made the recognition');
-  const { emoji } = state;
-  const reply = state.userIsExempt ? `Your recognition has been sent. Well done! You have infinite ${emoji} to give out`
-    : `Your recognition has been sent. Well done! You have ${5 - state.recognitionsGivenAfter} ${emoji} remaining`;
+  const remaining = state.userIsExempt ? 'infinity' : (5 - state.recognitionsGivenAfter);
+  const reply = `Your recognition has been sent. Well done! You have \`${remaining}\` left to give today.`;
 
   return new Promise((resolve, reject) => {
     state.bot.whisper(state.message, reply, (err) => {
@@ -164,13 +161,14 @@ const whisperReply = (state) => {
 
 module.exports = function listener(controller, context) {
   console.debug('Received a recognition for a user');
-  const { emoji, service } = context;
+  const { emoji, service, exemptUsers } = context;
   controller.hears([emoji], 'ambient', (bot, message) => {
     const statePromise = Promise.resolve({
       bot,
       message,
       service,
       emoji,
+      exemptUsers,
     });
 
     return statePromise

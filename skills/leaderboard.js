@@ -125,6 +125,15 @@ const addContentUsersImage = (state) => {
  */
 const addContentUsersContext = (state) => {
   console.debug('Add user list as context blocks');
+
+  const userToScoreBlock = (user, index) => ({
+    type: 'context',
+    elements: [
+      { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
+      { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${Math.round(user.score * 100) / 100}\n` },
+    ],
+  });
+
   state.content.blocks.push({
     type: 'section',
     block_id: 'recognizersTitle',
@@ -133,15 +142,8 @@ const addContentUsersContext = (state) => {
       text: '*Top Givers*',
     },
   });
-  state.leaderboard.recognizers.forEach((user, index) => {
-    state.content.blocks.push({
-      type: 'context',
-      elements: [
-        { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
-        { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n` },
-      ],
-    });
-  });
+  state.content.blocks.push(...state.leaderboard.recognizers.map(userToScoreBlock));
+
   state.content.blocks.push({
     type: 'section',
     block_id: 'recognizeesTitle',
@@ -150,15 +152,7 @@ const addContentUsersContext = (state) => {
       text: '*Top Receivers*',
     },
   });
-  state.leaderboard.recognizees.forEach((user, index) => {
-    state.content.blocks.push({
-      type: 'context',
-      elements: [
-        { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
-        { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${user.score}\n` },
-      ],
-    });
-  });
+  state.content.blocks.push(...state.leaderboard.recognizees.map(userToScoreBlock));
   return state;
 };
 

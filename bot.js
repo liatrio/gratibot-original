@@ -54,6 +54,8 @@ let mongodb = require("./service/mongo.js");
 let service_obj = require("./service/");
 let service = new service_obj(mongodb);
 let emoji = process.env.emoji || ':fistbump:';
+let exemptUsers = process.env.exemptUsers || 'U037FL37G';
+exemptUsers = exemptUsers.split(",")
 
 if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
   usage_tip();
@@ -104,8 +106,9 @@ require(__dirname + '/components/user_registration.js')(controller);
 require(__dirname + '/components/onboarding.js')(controller);
 
 const context = {
-    service: service, 
-    emoji: emoji,
+    service,
+    emoji,
+    exemptUsers,
 };
 
 var normalizedPath = require("path").join(__dirname, "skills");
