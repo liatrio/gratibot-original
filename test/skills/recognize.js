@@ -65,7 +65,7 @@ describe('recognize skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 1 :toast: remaining');
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have `1` left to give today.');
         expect(message.ephemeral).to.be.true;
       });
     });
@@ -87,7 +87,7 @@ describe('recognize skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.ephemeral).to.be.true;
-        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 0 :toast: remaining');
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have `0` left to give today.');
       });
     });
 
@@ -129,7 +129,7 @@ describe('recognize skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 1 :toast: remaining');
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have `1` left to give today.');
       });
     });
     it('should give toast to multiple users', () => {
@@ -147,7 +147,7 @@ describe('recognize skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 0 :toast: remaining');
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have `0` left to give today.');
       });
     });
     it('should give multiple toast to multiple users', () => {
@@ -183,7 +183,7 @@ describe('recognize skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 0 :toast: remaining');
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have `0` left to give today.');
       });
     });
     it('should ask for reason', () => {
@@ -261,7 +261,7 @@ describe('recognize skill', () => {
         },
       ];
       return this.bot.usersInput(sequence).then((message) => {
-        expect(message.text).to.equal('Your recognition has been sent. Well done! You have 1 :toast: remaining');
+        expect(message.text).to.equal('Your recognition has been sent. Well done! You have `1` left to give today.');
       });
     });
   });
@@ -289,6 +289,7 @@ describe('recognize skill', () => {
     const context = {
       service,
       emoji: ':toast:',
+      exemptUsers: [],
     };
     recognizeSkill(this.controller, context);
   });

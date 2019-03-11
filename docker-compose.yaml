@@ -14,6 +14,7 @@ services:
       - clientSecret
       - clientSigningSecret
       - emoji
+      - exemptUsers
     volumes:
       - .:/app
   mongodb:
