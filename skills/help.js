@@ -127,6 +127,4 @@ module.exports = function helper(controller, context) {
   controller.hears(['thunderfury', 'Thunderfury'], 'direct_message, direct_mention, ambient', (bot, message) => {
     bot.reply(message, 'Did someone say :thunderfury_blessed_blade_of_the_windseeker:[Thunderfury, Blessed Blade of the Windseeker]:thunderfury_blessed_blade_of_the_windseeker:?');
   });
-
-
 };
