@@ -117,7 +117,7 @@ const addContentButtons = (state) => {
  * Send message
  *
  * @param {object} state Promise chain state, contains full message
- * @return {object] Promise chain state
+ * @return {object} Promise chain state
  */
 const sendReply = (state) => {
   console.debug('Send reply message');
