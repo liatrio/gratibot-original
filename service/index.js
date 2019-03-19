@@ -1,4 +1,5 @@
 const moment = require('moment-timezone');
+const dateFormat = require('dateformat');
 
 function service(mongodb) {
   this.mongodb = mongodb;
@@ -189,4 +190,48 @@ function aggregateDataRecognizees(response) {
   return recognizees;
 }
 
+/**
+* Calculate the daily usage of Gratibot.
+*
+* @param {int} days Number of days to calculate usage for
+* @param {string} timezone Timezone to calculate based on
+* @return Promise which resolves to an object which contains a list of dates and counts
+*
+**/
+service.prototype.getMetrics = function(timezone = null, days = null) {
+  //get only the entries from the specifc day from midnight
+  let filter = {}
+  if(days && timezone) {
+    let userDate = moment(Date.now()).tz(timezone);
+    let midnight = userDate.startOf('day');
+    midnight = midnight.subtract(days - 1,'days');
+    filter.timestamp =
+      {
+        $gte: new Date(midnight)
+      }
+  }
+  return this.mongodb.recognition.find(filter).then( (response) => {
+    return aggragateUsageByDate(response, timezone);
+  });
+}
+
+function aggragateUsageByDate(response, timezone) {
+  let counts = {};
+  let recognitionDate = null;  
+  let dateString = "";
+  for (let i = 0; i < response.length; i++) {
+    if (timezone) {
+      recognitionDate = Date(response[i].timestamp).tz(timezone);
+    } else {
+      recognitionDate = Date(response[i].timestamp);
+    }
+    dateString = dateFormat(recognitionDate, "yyyy-mm-dd");
+    if (dateString in counts) {
+      counts[datestring]++;
+    } else {
+      counts[datestring] = 1;
+    }
+  }
+  return counts;
+}
 module.exports = service;
