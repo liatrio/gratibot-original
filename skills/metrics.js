@@ -1,5 +1,16 @@
 
 /**
+ * Get leaderboard and inject it in state
+ *
+ * @param {object} state Promise chain state
+ * @retrun {object} Promise chain state
+ */
+const getMetrics = (state) => {
+  console.debug('Get leaderboard data');
+  return state.service.getMetrics('America/Los_Angeles', state.dateRange).then(metrics => ({ ...state, metrics }));
+};
+
+/**
  * Add Header to message
  *
  * @param {object} state Promise chain state
@@ -31,6 +42,27 @@ const addGraph = (state) => {
 
   // TODO add graph
 
+  const dates = Object.keys(state.metrics);
+  dates.sort((a, b) => {
+    const aSplit = a.split('-');
+    const bSplit = b.split('-');
+    for (let i = 0; i < aSplit.length; i += 1) {
+      if (aSplit[i] !== bSplit[i]) {
+        return parseInt(aSplit[i], 10) > parseInt(bSplit[i], 10);
+      }
+    }
+    return 0;
+  });
+
+  for (let i = 0; i < dates.length; i += 1) {
+    state.content.blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `${dates[i]} : ${state.metrics[dates[i]]}`,
+      },
+    });
+  }
   return state;
 };
 
@@ -143,6 +175,7 @@ module.exports = function helper(controller, context) {
     Promise.resolve({
       service, bot, message, content, dateRange: 30,
     })
+      .then(getMetrics)
       .then(addHeader)
       .then(addGraph)
       .then(addContentRange)
@@ -163,6 +196,7 @@ module.exports = function helper(controller, context) {
     Promise.resolve({
       service, bot, message, content, dateRange: message.actions[0].value,
     })
+      .then(getMetrics)
       .then(addHeader)
       .then(addGraph)
       .then(addContentRange)

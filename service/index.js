@@ -1,5 +1,4 @@
 const moment = require('moment-timezone');
-const dateFormat = require('dateformat');
 
 function service(mongodb) {
   this.mongodb = mongodb;
@@ -221,15 +220,15 @@ function aggragateUsageByDate(response, timezone) {
   let dateString = "";
   for (let i = 0; i < response.length; i++) {
     if (timezone) {
-      recognitionDate = Date(response[i].timestamp).tz(timezone);
+      recognitionDate = moment.unix(response[i].timestamp).tz(timezone);
     } else {
-      recognitionDate = Date(response[i].timestamp);
+      recognitionDate = moment.unix(response[i].timestamp);
     }
-    dateString = dateFormat(recognitionDate, "yyyy-mm-dd");
+    dateString = recognitionDate.format("YYYY-MM-DD");
     if (dateString in counts) {
-      counts[datestring]++;
+      counts[dateString]++;
     } else {
-      counts[datestring] = 1;
+      counts[dateString] = 1;
     }
   }
   return counts;
