@@ -6,11 +6,11 @@
  * @return {object} Promise chain state
  */
 const addHeader = (state) => {
-  console.debug('Add metrics header');
+  console.debug('Metrics: Add Header');
   state.content.blocks.push(
     {
       type: 'section',
-      block_id: 'heading',
+      block_id: 'metricsHeader',
       text: {
         type: 'mrkdwn',
         text: '*Metrics*',
@@ -27,7 +27,7 @@ const addHeader = (state) => {
  * @return {object} Promise chain state
  */
 const addGraph = (state) => {
-  console.debug('Add Graph');
+  console.debug('Metrics: Add Graph');
 
   // TODO add graph
 
@@ -41,11 +41,11 @@ const addGraph = (state) => {
  * @return {object} Promise chain state
  */
 const addContentRange = (state) => {
-  console.debug('Add time range');
+  console.debug('Metrics: Add Time Range');
   state.content.blocks.push(
     {
       type: 'context',
-      block_id: 'timeRange',
+      block_id: 'metricsTimeRange',
       elements: [
         {
           type: 'plain_text',
@@ -65,11 +65,11 @@ const addContentRange = (state) => {
  * @return {object} Promise chain state
  */
 const addContentButtons = (state) => {
-  console.debug('Add action buttons');
+  console.debug('Metrics: Add Buttons');
   state.content.blocks.push(
     {
       type: 'actions',
-      block_id: 'timeRangeButtons',
+      block_id: 'metricsTimeRangeButtons',
       elements: [
         {
           type: 'button',
@@ -120,12 +120,12 @@ const addContentButtons = (state) => {
  * @return {object} Promise chain state
  */
 const sendReply = (state) => {
-  console.debug('Send reply message');
+  console.debug('Metrics: Reply');
   state.bot.whisper(state.message, state.content);
 };
 
 const sendReplyInteractive = (state) => {
-  console.debug('Send reply message');
+  console.debug('Metrics: Interactive Reply');
   state.bot.replyInteractive(state.message, state.content);
 };
 
@@ -138,7 +138,7 @@ const sendReplyInteractive = (state) => {
 module.exports = function helper(controller, context) {
   const { service } = context;
   controller.hears(['metrics'], 'direct_message, direct_mention', (bot, message) => {
-    console.debug('Received metrics message/mention');
+    console.debug('Metrics: Message Received');
     const content = { blocks: [] };
     Promise.resolve({
       service, bot, message, content, dateRange: 30,
@@ -155,11 +155,10 @@ module.exports = function helper(controller, context) {
   });
 
   controller.on('block_actions', (bot, message) => {
-    if (message.actions[0].block_id !== 'timeRangeButtons') {
+    if (message.actions[0].block_id !== 'metricsTimeRangeButtons') {
       return;
     }
-
-    console.debug('Received metrics block action');
+    console.debug('Metrics: Button Click Received');
     const content = { blocks: [] };
     Promise.resolve({
       service, bot, message, content, dateRange: message.actions[0].value,
