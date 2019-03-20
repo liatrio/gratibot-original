@@ -33,9 +33,10 @@ const addGraph = (state) => {
   state.content.blocks.push(
     {
       type: 'image',
-      image_url: 'https://mybot.serveo.net/metrics',
-      alt_text: 'ALTTEXT'
-    });
+      image_url: 'https://3ff3e163.ngrok.io/metrics',
+      alt_text: 'ALTTEXT',
+    },
+  );
 
   return state;
 };
