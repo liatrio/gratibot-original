@@ -210,27 +210,61 @@ service.prototype.getMetrics = function(timezone = null, days = null) {
       }
   }
   return this.mongodb.recognition.find(filter).then( (response) => {
-    return aggragateUsageByDate(response, timezone);
+    return aggragateUsageByDate(response, timezone, days);
   });
 }
 
-function aggragateUsageByDate(response, timezone) {
-  let counts = {};
-  let recognitionDate = null;  
-  let dateString = "";
+function aggragateUsageByDate(response, timezone, days) {
+  let data = Array(days);
+  for(let i = 0; i < days; i++) {
+    data[i] = [i, 0]; //TODO fill with Date instead of index
+  }
+  
+  let recognitionDate = null;
+  let currentTime = null;
+  let index;
   for (let i = 0; i < response.length; i++) {
     if (timezone) {
-      recognitionDate = moment.unix(response[i].timestamp).tz(timezone);
+      recognitionDate = moment(response[i].timestamp).tz(timezone);
+      currentTime = moment(Date.now()).tz(timezone);
     } else {
-      recognitionDate = moment.unix(response[i].timestamp);
+      recognitionDate = moment(response[i].timestamp);
+      currentTime = moment(Date.now());
     }
-    dateString = recognitionDate.format("YYYY-MM-DD");
-    if (dateString in counts) {
-      counts[dateString]++;
-    } else {
-      counts[dateString] = 1;
-    }
+    index = currentTime.diff(recognitionDate, 'days');
+    data[(days - 1) - index][1]++; // Days are arranged oldest first
   }
-  return counts;
+  var fs = require('fs');
+
+  var JSDOM  = require('jsdom').JSDOM;
+  var jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});
+  var window = jsdom.window;
+
+  var anychart = require('anychart')(window);
+  var anychartExport = require('anychart-nodejs')(anychart);
+  
+  var chart = anychart.area();
+  var series = chart.area(data);
+  chart.bounds(0,0,1000,1000);
+  chart.container('container');
+  chart.yAxis().labels().enabled(false);
+  chart.xAxis().labels().enabled(false);
+  chart.draw();
+  /*
+ 
+  anychartExport.exportTo(chart, 'png').then(function(image) {
+    fs.writeFile('anychart.png', image, function(fsWriteError) {
+      if (fsWriteError) {
+        console.log(fsWriteError);
+      } else {
+        console.log('Complete');
+      }
+    });
+  }, function(generationError) {
+    console.log(generationError);
+  });
+
+  */
+  return anychartExport.exportToSync(chart, 'png')
 }
 module.exports = service;

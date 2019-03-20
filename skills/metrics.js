@@ -41,28 +41,8 @@ const addGraph = (state) => {
   console.debug('Metrics: Add Graph');
 
   // TODO add graph
-
-  const dates = Object.keys(state.metrics);
-  dates.sort((a, b) => {
-    const aSplit = a.split('-');
-    const bSplit = b.split('-');
-    for (let i = 0; i < aSplit.length; i += 1) {
-      if (aSplit[i] !== bSplit[i]) {
-        return parseInt(aSplit[i], 10) > parseInt(bSplit[i], 10);
-      }
-    }
-    return 0;
-  });
-
-  for (let i = 0; i < dates.length; i += 1) {
-    state.content.blocks.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `${dates[i]} : ${state.metrics[dates[i]]}`,
-      },
-    });
-  }
+  console.debug(state.metrics);
+  
   return state;
 };
 
