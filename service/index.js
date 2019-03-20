@@ -189,33 +189,71 @@ function aggregateDataRecognizees(response) {
   return recognizees;
 }
 
-service.prototype.getMetrics = function() {
-  return new Promise((resolve, reject) => {
-    var JSDOM = require('jsdom').JSDOM;
-    // Create instance of JSDOM.
-    var jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});
-    // Get window
-    var window = jsdom.window;
-
-    // For jsdom version 9 or lower
-    // var jsdom = require('jsdom').jsdom;
-    // var document = jsdom('<body><div id="container"></div></body>');
-    // var window = document.defaultView;
-
-    // require anychart and anychart export modules
-    var anychart = require('anychart')(window);
-    var anychartExport = require('anychart-nodejs')(anychart);
-
-    // create and a chart to the jsdom window.
-    // chart creating should be called only right after anychart-nodejs module requiring
-    var chart = anychart.pie([10, 20, 7, 18, 30]);
-    chart.bounds(0, 0, 800, 600);
-    chart.container('container');
-    chart.draw();
-
-    // generate JPG image and save it to a file
-    resolve(anychartExport.exportTo(chart, 'jpg'));
+/**
+* Calculate the daily usage of Gratibot.
+*
+* @param {int} days Number of days to calculate usage for
+* @param {string} timezone Timezone to calculate based on
+* @return Promise which resolves to an object which contains a list of dates and counts
+*
+**/
+service.prototype.getMetrics = function(timezone = 'America/Los_Angeles', days = 7) {
+  //get only the entries from the specifc day from midnight
+  let filter = {}
+  if(days && timezone) {
+    let userDate = moment(Date.now()).tz(timezone);
+    let midnight = userDate.startOf('day');
+    midnight = midnight.subtract(days - 1,'days');
+    filter.timestamp =
+      {
+        $gte: new Date(midnight)
+      }
+  }
+  return this.mongodb.recognition.find(filter).then( (response) => {
+    return aggragateUsageByDate(response, timezone, days);
   });
 }
+
+function aggragateUsageByDate(response, timezone, days) {
+  let data = Array(days);
+  for(let i = 0; i < days; i++) {
+    data[i] = [i, 0]; //TODO fill with Date instead of index
+  }
+
+  let recognitionDate = null;
+  let currentTime = null;
+  let index;
+  for (let i = 0; i < response.length; i++) {
+    if (timezone) {
+      recognitionDate = moment(response[i].timestamp).tz(timezone);
+      currentTime = moment(Date.now()).tz(timezone);
+    } else {
+      recognitionDate = moment(response[i].timestamp);
+      currentTime = moment(Date.now());
+    }
+    index = currentTime.diff(recognitionDate, 'days');
+    data[(days - 1) - index][1]++; // Days are arranged oldest first
+  }
+  // var fs = require('fs');
+
+  var JSDOM  = require('jsdom').JSDOM;
+  var jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});
+  var window = jsdom.window;
+
+  var anychart = require('anychart')(window);
+  var anychartExport = require('anychart-nodejs')(anychart);
+
+  var chart = anychart.area();
+  var series = chart.area(data);
+  chart.bounds(0,0,1000,1000);
+  chart.container('container');
+  chart.yAxis().labels().enabled(true);
+  chart.xAxis().labels().enabled(true);
+  chart.xAxis().title("Time");
+  chart.draw();
+
+  return anychartExport.exportToSync(chart, 'png')
+}
+module.exports = service;
 
 module.exports = service;

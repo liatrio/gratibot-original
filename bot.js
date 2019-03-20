@@ -100,7 +100,10 @@ webserver.get('/', function(req, res){
 })
 
 webserver.get('/metrics', (req, res) => {
-  // res.set('Content-Type', 'image/jpeg');
+  res.set('Content-Type', 'image/jpeg');
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+  res.set('Pragma', 'no-cache')
+  res.set('Expires', '0')
   // service.getMetrics().then((image) => {
   //   res.send(image);
   // });
