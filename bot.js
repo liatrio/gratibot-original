@@ -104,7 +104,7 @@ webserver.get('/metrics', (req, res) => {
   // service.getMetrics().then((image) => {
   //   res.send(image);
   // });
-  service.getMetrics().then((image) => {
+  service.getMetrics('America/Los_Angeles', 8).then((image) => {
     res.send(image);
   });
 });
