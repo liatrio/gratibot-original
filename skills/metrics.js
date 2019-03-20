@@ -30,6 +30,12 @@ const addGraph = (state) => {
   console.debug('Metrics: Add Graph');
 
   // TODO add graph
+  state.content.blocks.push(
+    {
+      type: 'image',
+      image_url: 'https://mybot.serveo.net/metrics',
+      alt_text: 'ALTTEXT'
+    });
 
   return state;
 };

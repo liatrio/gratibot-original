@@ -98,6 +98,14 @@ webserver.get('/', function(req, res){
     layout: 'layouts/default'
   });
 })
+
+webserver.get('/metrics', (req, res) => {
+  res.set('Content-Type', 'image/jpeg');
+  service.getMetrics().then((image) => {
+    res.send(image);
+  });
+});
+
 // Set up a simple storage backend for keeping a record of customers
 // who sign up for the app via the oauth
 require(__dirname + '/components/user_registration.js')(controller);
