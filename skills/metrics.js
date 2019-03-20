@@ -34,8 +34,9 @@ const addGraph = (state) => {
     {
       type: 'image',
       image_url: 'https://mybot.serveo.net/metrics',
-      alt_text: 'ALTTEXT'
-    });
+      alt_text: 'ALTTEXT',
+    },
+  );
 
   return state;
 };
