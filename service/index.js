@@ -234,7 +234,7 @@ function aggragateUsageByDate(response, timezone, days) {
     index = currentTime.diff(recognitionDate, 'days');
     data[(days - 1) - index][1]++; // Days are arranged oldest first
   }
-  var fs = require('fs');
+  // var fs = require('fs');
 
   var JSDOM  = require('jsdom').JSDOM;
   var jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});

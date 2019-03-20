@@ -42,7 +42,7 @@ const addGraph = (state) => {
 
   // TODO add graph
   console.debug(state.metrics);
-  
+
   return state;
 };
 
