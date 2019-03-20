@@ -189,51 +189,33 @@ function aggregateDataRecognizees(response) {
   return recognizees;
 }
 
-/*
 service.prototype.getMetrics = function() {
   return new Promise((resolve, reject) => {
-      resolve('some text');
-      });
-}
-*/
+    var JSDOM = require('jsdom').JSDOM;
+    // Create instance of JSDOM.
+    var jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});
+    // Get window
+    var window = jsdom.window;
 
-service.prototype.getMetrics = function() {
-  return new Promise((resolve, reject) => {
-  var fs = require('fs');
+    // For jsdom version 9 or lower
+    // var jsdom = require('jsdom').jsdom;
+    // var document = jsdom('<body><div id="container"></div></body>');
+    // var window = document.defaultView;
 
-// For jsdom version 10 or higher.
-// Require JSDOM Class.
-var JSDOM = require('jsdom').JSDOM;
-// Create instance of JSDOM.
-var jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});
-// Get window
-var window = jsdom.window;
+    // require anychart and anychart export modules
+    var anychart = require('anychart')(window);
+    var anychartExport = require('anychart-nodejs')(anychart);
 
-// For jsdom version 9 or lower
-// var jsdom = require('jsdom').jsdom;
-// var document = jsdom('<body><div id="container"></div></body>');
-// var window = document.defaultView;
+    // create and a chart to the jsdom window.
+    // chart creating should be called only right after anychart-nodejs module requiring
+    var chart = anychart.pie([10, 20, 7, 18, 30]);
+    chart.bounds(0, 0, 800, 600);
+    chart.container('container');
+    chart.draw();
 
-// require anychart and anychart export modules
-var anychart = require('anychart')(window);
-var anychartExport = require('anychart-nodejs')(anychart);
-
-// create and a chart to the jsdom window.
-// chart creating should be called only right after anychart-nodejs module requiring
-
-var chart = anychart.pie([
-  {x: "A", value: 637166},
-  {x: "B", value: 721630},
-  {x: "C", value: 148662},
-  {x: "D", value: 78662},
-  {x: "E", value: 90000}
-]);
-chart.bounds(0, 0, 800, 600);
-chart.container('container');
-chart.draw();
-
-      resolve(anychartExport.exportTo(chart, 'jpeg'));
-      });
+    // generate JPG image and save it to a file
+    resolve(anychartExport.exportTo(chart, 'jpg'));
+  });
 }
 
 module.exports = service;
