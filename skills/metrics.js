@@ -33,7 +33,7 @@ const addGraph = (state) => {
   state.content.blocks.push(
     {
       type: 'image',
-      image_url: 'https://mybot.serveo.net/metrics?' + Math.random(),
+      image_url: `https://mybot.serveo.net/metrics?${Math.random()}`,
       alt_text: 'ALTTEXT',
     },
   );
