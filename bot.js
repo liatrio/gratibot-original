@@ -62,6 +62,8 @@ if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
   // process.exit(1);
 }
 
+
+
 var Botkit = require('botkit');
 var debug = require('debug')('botkit:main');
 
@@ -90,6 +92,8 @@ controller.startTicking();
 
 // Set up an Express-powered webserver to expose oauth and webhook endpoints
 var webserver = require(__dirname + '/components/express_webserver.js')(controller);
+
+
 
 webserver.get('/', function(req, res){
   res.render('index', {

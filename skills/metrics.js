@@ -5,6 +5,7 @@
  * @param {object} state Promise chain state
  * @return {object} Promise chain state
  */
+
 const addHeader = (state) => {
   console.debug('Metrics: Add Header');
   state.content.blocks.push(
@@ -29,11 +30,13 @@ const addHeader = (state) => {
 const addGraph = (state) => {
   console.debug('Metrics: Add Graph');
 
+
   // TODO add graph
   state.content.blocks.push(
     {
       type: 'image',
-      image_url: 'https://3ff3e163.ngrok.io/metrics',
+      //If running locally, you will need to set the environment variable botHostname
+      image_url: process.env.botHostname + "/metrics?" + Math.random(),
       alt_text: 'ALTTEXT',
     },
   );

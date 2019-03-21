@@ -208,7 +208,7 @@ service.prototype.getMetrics = function() {
 
     // create and a chart to the jsdom window.
     // chart creating should be called only right after anychart-nodejs module requiring
-    var chart = anychart.pie([10, 20, 7, 18, 30]);
+    var chart = anychart.pie([50, 30, 20, 40, 60]);
     chart.bounds(0, 0, 800, 600);
     chart.container('container');
     chart.draw();
