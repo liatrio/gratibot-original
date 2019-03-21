@@ -45,7 +45,7 @@ const addGraph = (state) => {
     {
       type: 'image',
       // If running locally, you will need to set the environment variable botHostname
-      image_url: `${process.env.botHostname}/metrics?${Math.random()}`,
+      image_url: `${process.env.botHostname}/metrics?rand=${Math.random()}&timezone=America/Los_Angeles&days=${state.dateRange}`,
       alt_text: 'ALTTEXT',
     },
   );
@@ -162,7 +162,7 @@ module.exports = function helper(controller, context) {
     Promise.resolve({
       service, bot, message, content, dateRange: 30,
     })
-//      .then(getMetrics)
+      .then(getMetrics)
       .then(addHeader)
       .then(addGraph)
       .then(addContentRange)
@@ -183,7 +183,7 @@ module.exports = function helper(controller, context) {
     Promise.resolve({
       service, bot, message, content, dateRange: message.actions[0].value,
     })
-//      .then(getMetrics)
+      .then(getMetrics)
       .then(addHeader)
       .then(addGraph)
       .then(addContentRange)

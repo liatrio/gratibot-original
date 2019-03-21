@@ -105,7 +105,7 @@ webserver.get('/', function(req, res){
 
 webserver.get('/metrics', (req, res) => {
   res.set('Content-Type', 'image/jpeg');
-  service.getMetrics().then((image) => {
+  service.getMetrics(req.query['timezone'], req.query['days']).then((image) => {
     res.send(image);
   });
 });
