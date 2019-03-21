@@ -255,5 +255,3 @@ function aggragateUsageByDate(response, timezone, days) {
   return anychartExport.exportToSync(chart, 'png')
 }
 module.exports = service;
-
-module.exports = service;
