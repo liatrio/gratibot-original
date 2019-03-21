@@ -197,7 +197,7 @@ function aggregateDataRecognizees(response) {
 * @return Promise which resolves to an object which contains a list of dates and counts
 *
 **/
-service.prototype.getMetrics = function(timezone = null, days = null) {
+service.prototype.getMetrics = function(timezone = 'America/Los_Angeles', days = 7) {
   //get only the entries from the specifc day from midnight
   let filter = {}
   if(days && timezone) {
@@ -219,7 +219,7 @@ function aggragateUsageByDate(response, timezone, days) {
   for(let i = 0; i < days; i++) {
     data[i] = [i, 0]; //TODO fill with Date instead of index
   }
-  
+
   let recognitionDate = null;
   let currentTime = null;
   let index;
@@ -242,29 +242,17 @@ function aggragateUsageByDate(response, timezone, days) {
 
   var anychart = require('anychart')(window);
   var anychartExport = require('anychart-nodejs')(anychart);
-  
+
   var chart = anychart.area();
   var series = chart.area(data);
   chart.bounds(0,0,1000,1000);
   chart.container('container');
-  chart.yAxis().labels().enabled(false);
-  chart.xAxis().labels().enabled(false);
+
+  chart.yAxis().labels().enabled(true);
+  chart.xAxis().labels().enabled(true);
+  chart.xAxis().title("Time");
   chart.draw();
-  /*
 
-  anychartExport.exportTo(chart, 'png').then(function(image) {
-    fs.writeFile('anychart.png', image, function(fsWriteError) {
-      if (fsWriteError) {
-        console.log(fsWriteError);
-      } else {
-        console.log('Complete');
-      }
-    });
-  }, function(generationError) {
-    console.log(generationError);
-  });
-
-  */
   return anychartExport.exportToSync(chart, 'png')
 }
 module.exports = service;

@@ -16,6 +16,7 @@ const getMetrics = (state) => {
  * @param {object} state Promise chain state
  * @return {object} Promise chain state
  */
+
 const addHeader = (state) => {
   console.debug('Metrics: Add Header');
   state.content.blocks.push(
@@ -40,8 +41,14 @@ const addHeader = (state) => {
 const addGraph = (state) => {
   console.debug('Metrics: Add Graph');
 
-  // TODO add graph
-  console.debug(state.metrics);
+  state.content.blocks.push(
+    {
+      type: 'image',
+      // If running locally, you will need to set the environment variable botHostname
+      image_url: `${process.env.botHostname}/metrics?${Math.random()}`,
+      alt_text: 'ALTTEXT',
+    },
+  );
 
   return state;
 };
@@ -155,7 +162,7 @@ module.exports = function helper(controller, context) {
     Promise.resolve({
       service, bot, message, content, dateRange: 30,
     })
-      .then(getMetrics)
+//      .then(getMetrics)
       .then(addHeader)
       .then(addGraph)
       .then(addContentRange)
@@ -176,7 +183,7 @@ module.exports = function helper(controller, context) {
     Promise.resolve({
       service, bot, message, content, dateRange: message.actions[0].value,
     })
-      .then(getMetrics)
+//      .then(getMetrics)
       .then(addHeader)
       .then(addGraph)
       .then(addContentRange)
