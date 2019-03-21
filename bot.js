@@ -62,6 +62,8 @@ if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
   // process.exit(1);
 }
 
+
+
 var Botkit = require('botkit');
 var debug = require('debug')('botkit:main');
 
@@ -91,6 +93,8 @@ controller.startTicking();
 // Set up an Express-powered webserver to expose oauth and webhook endpoints
 var webserver = require(__dirname + '/components/express_webserver.js')(controller);
 
+
+
 webserver.get('/', function(req, res){
   res.render('index', {
     domain: req.get('host'),
@@ -98,6 +102,14 @@ webserver.get('/', function(req, res){
     layout: 'layouts/default'
   });
 })
+
+webserver.get('/metrics', (req, res) => {
+  res.set('Content-Type', 'image/jpeg');
+  service.getMetrics().then((image) => {
+    res.send(image);
+  });
+});
+
 // Set up a simple storage backend for keeping a record of customers
 // who sign up for the app via the oauth
 require(__dirname + '/components/user_registration.js')(controller);
