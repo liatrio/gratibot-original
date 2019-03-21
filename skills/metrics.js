@@ -35,8 +35,8 @@ const addGraph = (state) => {
   state.content.blocks.push(
     {
       type: 'image',
-      //If running locally, you will need to set the environment variable botHostname
-      image_url: process.env.botHostname + "/metrics?" + Math.random(),
+      // If running locally, you will need to set the environment variable botHostname
+      image_url: `${process.env.botHostname}/metrics?${Math.random()}`,
       alt_text: 'ALTTEXT',
     },
   );
