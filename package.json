@@ -16,7 +16,7 @@
     "cookie-parser": "^1.4.3",
     "debug": "^2.3.3",
     "express": "^4.14.0",
-    "express-hbs": "^1.0.4",
+    "express-hbs": "^2.0.2",
     "hoek": ">=4.2.1",
     "moment-timezone": "^0.5.23",
     "monk": "^6.0.6",
