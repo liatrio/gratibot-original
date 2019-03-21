@@ -251,7 +251,7 @@ function aggragateUsageByDate(response, timezone, days) {
   chart.xAxis().labels().enabled(false);
   chart.draw();
   /*
- 
+
   anychartExport.exportTo(chart, 'png').then(function(image) {
     fs.writeFile('anychart.png', image, function(fsWriteError) {
       if (fsWriteError) {
