@@ -15,6 +15,7 @@ services:
       - clientSigningSecret
       - emoji
       - exemptUsers
+      - botHostname
     volumes:
       - .:/app
   mongodb:

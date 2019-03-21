@@ -1,4 +1,3 @@
-
 /**
  * Add Header to message
  *
@@ -30,13 +29,11 @@ const addHeader = (state) => {
 const addGraph = (state) => {
   console.debug('Metrics: Add Graph');
 
-
-  // TODO add graph
   state.content.blocks.push(
     {
       type: 'image',
       // If running locally, you will need to set the environment variable botHostname
-      image_url: `${process.env.botHostname}/metrics?${Math.random()}`,
+      image_url: `${process.env.botHostname}/metrics?rand=${Math.random()}&timezone=America/Los_Angeles&days=${state.dateRange}`,
       alt_text: 'ALTTEXT',
     },
   );
