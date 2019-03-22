@@ -305,6 +305,7 @@ describe('recognize', () => {
 
     it('should handle no matches', () => {
       const state = {
+        bot: this.bot,
         message: {
           text: 'foo bar',
         },
