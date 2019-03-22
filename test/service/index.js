@@ -126,4 +126,22 @@ describe('service index', () => {
       });
     });
   });
+
+  describe('get metrics', () => {
+    const mongodb = {
+      recognition: {
+        find: (document) => {
+          const response = [document];
+          return Promise.resolve(response);
+        },
+      },
+    };
+    const service = new ServiceObj(mongodb);
+    it('not cause exception', () => {
+      expect(() => { service.getMetrics('timezone', 1); }).to.not.throw();
+    });
+    it('returns promise', () => {
+      expect(service.getMetrics('timezone', 1)).to.be.an.instanceof(Promise);
+    });
+  });
 });
