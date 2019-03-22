@@ -1,5 +1,11 @@
 const moment = require('moment-timezone');
 
+const JSDOM  = require('jsdom').JSDOM;
+const jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});
+const window = jsdom.window;
+const anychart = require('anychart')(window);
+const anychartExport = require('anychart-nodejs')(anychart);
+
 function service(mongodb) {
   this.mongodb = mongodb;
 }
@@ -215,6 +221,7 @@ service.prototype.getMetrics = function(timezone = 'America/Los_Angeles', days =
 }
 
 function aggragateUsageByDate(response, timezone, days) {
+  
   let data = Array(days);
   for(let i = 0; i < days; i++) {
     data[i] = [i, 0]; //TODO fill with Date instead of index
@@ -222,7 +229,8 @@ function aggragateUsageByDate(response, timezone, days) {
 
   let recognitionDate = null;
   let currentTime = null;
-  let index;
+  let index = 0;
+  
   for (let i = 0; i < response.length; i++) {
     if (timezone) {
       recognitionDate = moment(response[i].timestamp).tz(timezone);
@@ -234,22 +242,16 @@ function aggragateUsageByDate(response, timezone, days) {
     index = currentTime.diff(recognitionDate, 'days');
     data[(days - 1) - index][1]++; // Days are arranged oldest first
   }
-  // var fs = require('fs');
-
-  var JSDOM  = require('jsdom').JSDOM;
-  var jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});
-  var window = jsdom.window;
-
-  var anychart = require('anychart')(window);
-  var anychartExport = require('anychart-nodejs')(anychart);
-
+  
   var chart = anychart.area();
   var series = chart.area(data);
   chart.bounds(0,0,1000,1000);
   chart.container('container');
+
   chart.yAxis().labels().enabled(true);
   chart.xAxis().labels().enabled(true);
   chart.xAxis().title("Time");
+  
   chart.draw();
 
   return anychartExport.exportToSync(chart, 'png')
