@@ -25,7 +25,8 @@ resource "aws_ecs_task_definition" "gratibot" {
     {
       "cpu": ${var.fargate_cpu},
       "environment": [{
-        "botHostname": "${var.app_host}.${var.domain}"
+        "name": "botHostname",
+        "value": "${var.app_host}.${var.domain}"
       }],
       "executionRoleArn": "${data.aws_iam_role.ecs_task_execution.arn}",
       "image": "${var.app_image}",
