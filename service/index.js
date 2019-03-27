@@ -205,6 +205,7 @@ function aggregateDataRecognizees(response) {
 **/
 service.prototype.getMetrics = function(timezone = 'America/Los_Angeles', days = 7) {
   //get only the entries from the specifc day from midnight
+  console.debug('Metrics: Get Metrics');'
   let filter = {}
   if(days && timezone) {
     let userDate = moment(Date.now()).tz(timezone);
