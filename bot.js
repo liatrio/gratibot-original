@@ -104,6 +104,7 @@ webserver.get('/', function(req, res){
 })
 
 webserver.get('/metrics', (req, res) => {
+  console.debug('Metrics: Endpoint Hit');
   res.set('Content-Type', 'image/jpeg');
   service.getMetrics(req.query['timezone'], req.query['days']).then((image) => {
     res.send(image);
