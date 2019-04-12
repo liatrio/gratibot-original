@@ -86,6 +86,9 @@ pipeline {
         }
     }
     post {
+        always {
+            sh "docker rmi ${IMAGE}:latest ${IMAGE}:${GIT_COMMIT[0..10]}"
+        }
         failure {
             slackSend channel: "#${env.SLACK_CHANNEL}",  color: "danger", message: "Build failed: ${env.JOB_NAME} on build #${env.BUILD_NUMBER} (<${env.BUILD_URL}|go there>)"
         }
