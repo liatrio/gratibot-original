@@ -28,7 +28,7 @@ const addHeader = (state) => {
  */
 const addGraph = (state) => {
   console.debug('Metrics: Add Graph');
-
+  console.debug(`Metrics: Image URL ${process.env.botHostname}/metrics?rand=${Math.random()}&timezone=America/Los_Angeles&days=${state.dateRange}`);
   state.content.blocks.push(
     {
       type: 'image',
