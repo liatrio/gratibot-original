@@ -7,7 +7,9 @@ RUN apk add imagemagick librsvg
 RUN apk add --update  --repository http://dl-3.alpinelinux.org/alpine/edge/testing libmount ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family fontconfig
 
 # nodemon for dev
-RUN npm install -g nodemon
+RUN npm config set unsafe-perm true \
+    && npm install -g nodemon \
+    && npm config set unsafe-perm false
 
 # handle dependencies
 COPY package*.json ./
