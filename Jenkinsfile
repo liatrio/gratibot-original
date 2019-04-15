@@ -25,14 +25,11 @@ pipeline {
             }
             steps {
                 container('jx-base') {
-                    sh "docker build --pull -t ${IMAGE}:${GIT_COMMIT[0..10]} -t ${IMAGE}:latest ."
+                    sh "docker build --pull -t ${IMAGE}:${GIT_COMMIT[0..10]} ."
                 }
             }
         }
         stage('Publish image') {
-            when { 
-                branch 'master'
-            }
             agent { 
                 label "jenkins-jx-base"
             }
@@ -41,7 +38,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]) {
                         sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
                         sh "docker push ${IMAGE}:${GIT_COMMIT[0..10]}"
-                        sh "docker push ${IMAGE}:latest"
+                        sh "docker rmi ${IMAGE}:${GIT_COMMIT[0..10]}"
                     }
                 }
             }
@@ -64,17 +61,18 @@ pipeline {
                         """
                     }
                 }
+                slackSend channel: "#${env.SLACK_CHANNEL}", message: "Promote gratibot: (<${env.BUILD_URL}|Go to job to approve/deny>)"
             }
         }
         stage('Prod environment deploy') {
             when {
                 branch 'master'
             }
+            input('Proceed to production?')
             agent {
                 label "jenkins-terraform"
             }
             steps {
-                input('Proceed to production?')
                 container('terraform') {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-SVC-Jenkins-prod-dev' ]]) {
                         sh """
@@ -85,19 +83,10 @@ pipeline {
                         """
                     }
                 }
-                slackSend channel: "#${env.SLACK_CHANNEL}", message: "Promote gratibot: (<${env.BUILD_URL}|Go to job to approve/deny>)"
             }
         }
     }
     post {
-        always {
-            agent { 
-                label "jenkins-jx-base"
-            }
-            container('jx-base') {
-                sh "docker rmi ${IMAGE}:latest ${IMAGE}:${GIT_COMMIT[0..10]}"
-            }
-        }
         failure {
             slackSend channel: "#${env.SLACK_CHANNEL}",  color: "danger", message: "Build failed: ${env.JOB_NAME} on build #${env.BUILD_NUMBER} (<${env.BUILD_URL}|go there>)"
         }
