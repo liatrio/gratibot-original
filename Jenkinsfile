@@ -68,11 +68,11 @@ pipeline {
             when {
                 branch 'master'
             }
-            input('Proceed to production?')
             agent {
                 label "jenkins-terraform"
             }
             steps {
+                input('Proceed to production?')
                 container('terraform') {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-SVC-Jenkins-prod-dev' ]]) {
                         sh """
