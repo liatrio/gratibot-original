@@ -1,4 +1,5 @@
 pipeline {
+    agent none
     environment {
         SKAFFOLD_DEFAULT_REPO = 'docker.artifactory.liatr.io/liatrio'
         SLACK_CHANNEL="flywheel"
