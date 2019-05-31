@@ -3,6 +3,9 @@ pipeline {
     environment {
         SKAFFOLD_DEFAULT_REPO = 'docker.artifactory.liatr.io/liatrio'
         SLACK_CHANNEL="flywheel"
+        TF_INPUT              = 0
+        TF_IN_AUTOMATION      = 1 
+        TF_CLI_ARGS           = "-no-color"
     }
     stages {
         stage('Build Image') {
@@ -27,15 +30,18 @@ pipeline {
             agent {
                 label "lead-toolchain-terraform"
             }
+            environment {
+                TF_VAR_app_image      = "${SKAFFOLD_DEFAULT_REPO}/${IMAGE}:${GIT_COMMIT[0..7]}"
+                TF_VAR_domain         = "liatr.io"
+                TF_VAR_app_host       = "dev.gratibot"
+            }
             steps {
                 container('terraform') {
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-SVC-Jenkins-non-prod-dev' ]]) {
-                        sh """
-                        cd infrastructure
-                        terraform init -input=false -no-color -force-copy -reconfigure
-                        terraform plan -out=plan_nonprod_gratibot -input=false -no-color -var app_image=${SKAFFOLD_DEFAULT_REPO}/${IMAGE}:${GIT_COMMIT[0..7]} -var domain='liatr.io' -var app_host='dev.gratibot'
-                        terraform apply -input=false plan_nonprod_gratibot -no-color
-                        """
+                    dir('infrastructure') {
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-SVC-Jenkins-non-prod-dev' ]]) {
+                            sh "terraform init -force-copy -reconfigure"
+                            sh "terraform apply -auto-approve"
+                        }
                     }
                 }
                 slackSend channel: "#${env.SLACK_CHANNEL}", message: "Promote gratibot: (<${env.BUILD_URL}|Go to job to approve/deny>)"
@@ -49,16 +55,19 @@ pipeline {
             agent {
                 label "lead-toolchain-terraform"
             }
+            environment {
+                TF_VAR_app_image      = "${SKAFFOLD_DEFAULT_REPO}/${IMAGE}:${GIT_COMMIT[0..7]}"
+                TF_VAR_domain         = "prod.liatr.io"
+                TF_VAR_app_host       = "gratibot"
+            }
             steps {
                 input('Proceed to production?')
                 container('terraform') {
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-SVC-Jenkins-prod-dev' ]]) {
-                        sh """
-                        cd infrastructure
-                        terraform init -input=false -no-color -force-copy -reconfigure -backend-config="bucket=slackbots-prod-tfstates"
-                        terraform plan -out=plan_prod_gratibot -input=false -no-color -var app_image=${SKAFFOLD_DEFAULT_REPO}/${IMAGE}:${GIT_COMMIT[0..7]} -var domain='prod.liatr.io' -var app_host='gratibot'
-                        terraform apply -input=false plan_prod_gratibot -no-color
-                        """
+                    dir('infrastructure') {
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-SVC-Jenkins-prod-dev' ]]) {
+                            sh "terraform init -force-copy -reconfigure -backend-config='bucket=slackbots-prod-tfstates'"
+                            sh "terraform apply -auto-approve"
+                        }
                     }
                 }
             }
