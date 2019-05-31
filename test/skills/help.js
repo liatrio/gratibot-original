@@ -43,7 +43,7 @@ describe('help skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.text).to.be.an('undefined');
-        expect(message.blocks).to.have.lengthOf(18);
+        expect(message.blocks).to.have.lengthOf(21);
       });
     });
   });
@@ -66,7 +66,7 @@ describe('help skill', () => {
 
       return this.bot.usersInput(sequence).then((message) => {
         expect(message.text).to.be.an('undefined');
-        expect(message.blocks).to.have.lengthOf(18);
+        expect(message.blocks).to.have.lengthOf(21);
       });
     });
   });

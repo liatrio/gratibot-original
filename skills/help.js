@@ -120,6 +120,23 @@ module.exports = function helper(controller, context) {
             text: "Send me a direct message with `leaderboard` and I'll show you who is giving and receiving the most recognition.",
           },
         },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '*View Metrics*',
+          },
+        },
+        {
+          type: 'divider',
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: "Send me a direct message with `metrics` and I'll show you how many times people have given recognition over the last month.",
+          },
+        },
       ],
     });
   });
