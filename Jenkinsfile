@@ -21,6 +21,7 @@ pipeline {
         }
         stage('Preprod Deploy') {
             when {
+                beforeAgent true
                 branch 'master'
             }
             agent {
@@ -42,6 +43,7 @@ pipeline {
         }
         stage('Prod Deploy') {
             when {
+                beforeAgent true
                 branch 'master'
             }
             agent {
