@@ -35,3 +35,5 @@ This can be done manually or via the `infra_admin` Terraform configuration. This
 
 For more information on the AWS Requirements check out [The ECS Docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html#secrets-create-taskdefinition)
 
+## Jenkins configuration
+Jenkins needs the [AWS Credentials Plugin](https://wiki.jenkins.io/display/JENKINS/CloudBees+AWS+Credentials+Plugin) installed and configured with `AWS-SVC-Jenkins-non-prod-dev` and `AWS-SVC-Jenkins-prod-dev`
