@@ -31,7 +31,7 @@ pipeline {
                 label "lead-toolchain-terraform"
             }
             environment {
-                TF_VAR_app_image      = "${SKAFFOLD_DEFAULT_REPO}/gratibot:${GIT_COMMIT[0..7]}"
+                TF_VAR_app_image      = "${SKAFFOLD_DEFAULT_REPO}/gratibot:${GIT_COMMIT[0..6]}"
                 TF_VAR_domain         = "liatr.io"
                 TF_VAR_app_host       = "dev.gratibot"
             }
@@ -56,7 +56,7 @@ pipeline {
                 label "lead-toolchain-terraform"
             }
             environment {
-                TF_VAR_app_image      = "${SKAFFOLD_DEFAULT_REPO}/gratibot:${GIT_COMMIT[0..7]}"
+                TF_VAR_app_image      = "${SKAFFOLD_DEFAULT_REPO}/gratibot:${GIT_COMMIT[0..6]}"
                 TF_VAR_domain         = "prod.liatr.io"
                 TF_VAR_app_host       = "gratibot"
             }
