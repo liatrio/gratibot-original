@@ -14,13 +14,9 @@ pipeline {
         notifyPipelineStart()
         notifyStageStart()
         container('skaffold') {
-          script {
-            docker.withRegistry("https://${SKAFFOLD_DEFAULT_REPO}", 'jenkins-credential-artifactory') {
-              sh "skaffold build --file-output=image.json"
-              stash includes: 'image.json', name: 'build'
-              sh "rm image.json"
-            }
-          }
+          sh "skaffold build --file-output=image.json"
+          stash includes: 'image.json', name: 'build'
+          sh "rm image.json"
         }
       }
       post {
