@@ -2,7 +2,7 @@ library 'LEAD'
 pipeline {
   agent none
   environment {
-    SKAFFOLD_DEFAULT_REPO = 'docker.artifactory.liatr.io/liatrio'
+    SKAFFOLD_DEFAULT_REPO = 'artifactory.toolchain.lead.prod.liatr.io/docker-registry/liatrio-dev'
     SLACK_CHANNEL="flywheel"
   }
   stages {
