@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gratibot
+  labels:
+    chart: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  selector:
+    matchLabels:
+      app: gratibot
+  template:
+    metadata:
+      labels:
+        app: gratibot
+    spec:
+      containers:
+      - name: gratibot
+        image: "{{ .Values.image }}"
+        ports:
+          - containerPort: 80
