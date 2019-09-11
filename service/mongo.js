@@ -4,6 +4,7 @@ var monk = require('monk');
 const db = monk(process.env.mongodbUri);
 
 db.catch(function(err) {
+  console.log(process.env.mongodbUri);
   throw new Error(err)
 });
 
