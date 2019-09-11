@@ -12,4 +12,19 @@ spec:
       name: gratibot
   selector:
       app: gratibot
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gratibot-db
+  labels:
+      chart: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  type: ClusterIP
+  ports:
+    - port: 27017
+      targetPort: 27017
+      name: db
+  selector:
+      app: gratibot-db
 

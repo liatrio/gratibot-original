@@ -2,7 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-image: docker.artifactory.liatr.io/liatrio/gratibot:latest
+gratibot:
+  image: docker.artifactory.liatr.io/liatrio/gratibot:latest
+
+mongo:
+  image: mongo:3.6
 
 ingress:
   enabled: false

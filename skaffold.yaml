@@ -18,3 +18,4 @@ deploy:
       chartPath: charts/gratibot
       setValueTemplates:
         istioDomain: "{{.ISTIO_DOMAIN}}"
+        mongodbUri: "mongo://gratibot-db/gratibot"

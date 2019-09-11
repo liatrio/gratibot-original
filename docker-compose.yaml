@@ -9,7 +9,6 @@ services:
     build: .
     environment:
       - debug
-      - mongodbUri=mongodb:27017/gratibot
       - clientId
       - clientSecret
       - clientSigningSecret
