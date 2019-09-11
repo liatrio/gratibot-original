@@ -16,6 +16,8 @@ deploy:
     releases:
     - name: gratibot
       chartPath: charts/gratibot
+      values:
+        gratibot.image: gratibot
       setValueTemplates:
         istioDomain: "{{.ISTIO_DOMAIN}}"
         mongodbUri: "mongo://gratibot-db/gratibot"
