@@ -8,7 +8,7 @@ gratibot:
 mongo:
   image: mongo:3.6
 
-mongodbUri: "mongo://gratibot-db/gratibot"
+mongodbUri: "gratibot-db/gratibot"
 
 ingress:
   enabled: false
