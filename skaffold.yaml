@@ -20,4 +20,4 @@ deploy:
         gratibot.image: gratibot
       setValueTemplates:
         istioDomain: "{{.ISTIO_DOMAIN}}"
-        mongodbUri: "mongo://gratibot-db/gratibot"
+        mongodbUri: "gratibot-db/gratibot"
