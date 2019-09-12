@@ -19,23 +19,23 @@ spec:
         ports:
           - containerPort: 3000
         env:
-        - name: mongodbUri
-          valueFrom:
-            secretKeyRef:
-              name: gratibot
-              key: mongodbUri
-        - name: clientId
-           valueFrom:
-            secretKeyRef:
-              name: gratibot
-              key: clientId
-        - name: clientsecret
-           valueFrom:
-            secretKeyRef:
-              name: gratibot
-              key: clientsecret
-        - name: signingsecret
-           valueFrom:
-            secretKeyRef:
-              name: gratibot
-              key: signingsecret
+          - name: mongodbUri
+            valueFrom:
+              secretKeyRef:
+                name: gratibot
+                key: mongodbUri
+          - name: clientId
+            valueFrom:
+              secretKeyRef:
+                name: gratibot
+                key: clientId
+          - name: clientsecret
+            valueFrom:
+              secretKeyRef:
+                name: gratibot
+                key: clientsecret
+          - name: signingsecret
+            valueFrom:
+              secretKeyRef:
+                name: gratibot
+                key: signingsecret
