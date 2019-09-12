@@ -5,6 +5,7 @@ const db = monk(process.env.mongodbUri);
 
 db.catch(function(err) {
   console.log(process.env.mongodbUri);
+  console.log(process.env.clientId);
   throw new Error(err)
 });
 
