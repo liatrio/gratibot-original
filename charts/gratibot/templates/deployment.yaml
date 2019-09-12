@@ -20,4 +20,22 @@ spec:
           - containerPort: 3000
         env:
         - name: mongodbUri
-          value: "{{ .Values.mongodbUri }}"
+          valueFrom:
+            secretKeyRef:
+              name: gratibot
+              key: mongodbUri
+        - name: clientId
+           valueFrom:
+            secretKeyRef:
+              name: gratibot
+              key: clientId
+        - name: clientsecret
+           valueFrom:
+            secretKeyRef:
+              name: gratibot
+              key: clientsecret
+        - name: signingsecret
+           valueFrom:
+            secretKeyRef:
+              name: gratibot
+              key: signingsecret
