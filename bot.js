@@ -80,7 +80,8 @@ var bot_options = {
 
 // Use a mongo database if specified, otherwise store in a JSON file local to the app.
 if (process.env.mongodbUri) {
-    var mongoStorage = require('botkit-storage-mongo')({mongoUri: process.env.mongodbUri});
+    let mongo = 'mongo://' + process.env.mongodbUri;
+    var mongoStorage = require('botkit-storage-mongo')({mongoUri: mongo});
     bot_options.storage = mongoStorage;
 } else {
     bot_options.json_file_store = __dirname + '/.data/db/'; // store user data in a simple JSON format
