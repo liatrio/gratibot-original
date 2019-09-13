@@ -1,14 +1,10 @@
-const monk = require('monk');
+var monk = require('monk');
 
 // Connect to mongodb server
-const db = monk(process.env.mongodbUri)
+const db = monk(process.env.mongodbUri);
 
-db.then(() => {
-  console.log("Connected Properly");
-}).catch(err => {
-  console.log(process.env.mongodbUri);
-  console.log("Failed to connect to the database");
-  console.log(err);
+db.catch(function(err) {
+  throw new Error(err)
 });
 
 // Initialize recognition collection
