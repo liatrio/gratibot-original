@@ -26,6 +26,8 @@ spec:
             memory: "128Mi"
             cpu: "500m" 
         env:
+          - name: botHostname
+            value: "{{ .Chart.Name }}.{{ .Values.istioDomain }}"
           - name: mongodbUri
             value: "{{ .Values.mongodbUri }}" 
           - name: clientId
