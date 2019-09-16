@@ -33,7 +33,7 @@ pipeline {
       }
       when {
         beforeAgent true
-        branch 'ENG-1163'
+        branch 'master'
       }
       environment {
         TILLER_NAMESPACE      = "${env.stagingNamespace}"
@@ -58,7 +58,7 @@ pipeline {
     stage ('Manual Ready Check') {
       agent none
       when {
-        branch 'ENG-1163'
+        branch 'master'
       }
       options {
         timeout(time: 30, unit: 'MINUTES')
