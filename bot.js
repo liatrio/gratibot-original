@@ -51,7 +51,6 @@ This bot demonstrates many of the core features of Botkit:
 env(__dirname + '/.env');
 */
 let mongodb = require("./service/mongo.js");
-console.log("Reached this point");
 let service_obj = require("./service/");
 let service = new service_obj(mongodb);
 let emoji = process.env.emoji || ':fistbump:';
