@@ -58,6 +58,7 @@ pipeline {
     stage ('Manual Ready Check') {
       agent none
       when {
+        beforeInput true
         branch 'master'
       }
       options {
