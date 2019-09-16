@@ -7,11 +7,6 @@ db.catch(function(err) {
   throw new Error(err)
 });
 
-console.log(process.env.mongodbUri);
-console.log(process.env.clientId);
-console.log(process.env.clientsecret);
-console.log(process.env.signingsecret);
-
 // Initialize recognition collection
 const recognition = db.get('recognition');
 recognition.ensureIndex('recognizer');
