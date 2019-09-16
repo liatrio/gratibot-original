@@ -20,7 +20,7 @@ spec:
         strategy:
           type: recreate
         volumeMounts:
-        - mountPath: /mongo-data
+        - mountPath: /data/db
           name: mongo-data
   volumeClaimTemplates:
   - metadata:
