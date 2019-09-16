@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gratibot
+  labels:
+    chart: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  selector:
+    matchLabels:
+      app: gratibot
+  template:
+    metadata:
+      labels:
+        app: gratibot
+    spec:
+      containers:
+      - name: gratibot
+        image: "{{ .Values.gratibot.image }}"
+        ports:
+          - containerPort: 3000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m" 
+        env:
+          - name: botHostname
+            value: "{{ .Chart.Name }}.{{ .Values.istioDomain }}"
+          - name: mongodbUri
+            value: "{{ .Values.mongodbUri }}" 
+          - name: clientId
+            valueFrom:
+              secretKeyRef:
+                name: gratibot
+                key: clientId
+          - name: clientsecret
+            valueFrom:
+              secretKeyRef:
+                name: gratibot
+                key: clientsecret
+          - name: signingsecret
+            valueFrom:
+              secretKeyRef:
+                name: gratibot
+                key: signingsecret

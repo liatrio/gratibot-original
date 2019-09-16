@@ -1,4 +1,4 @@
-apiVersion: skaffold/v1beta11
+apiVersion: skaffold/v1beta12
 kind: Config
 build:
   artifacts:
@@ -8,3 +8,16 @@ test:
 - image: gratibot
   structureTests:
   - ./image-test/*
+deploy:
+  helm:
+    flags:
+      upgrade: ["--timeout", "600", "--namespace", "toolchain"]
+      install: ["--timeout", "600", "--namespace", "toolchain"]
+    releases:
+    - name: gratibot
+      chartPath: charts/gratibot
+      values:
+        gratibot.image: gratibot
+      setValueTemplates:
+        istioDomain: "{{.ISTIO_DOMAIN}}"
+        mongodbUri: "gratibot-db/gratibot"
