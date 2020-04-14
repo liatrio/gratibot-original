@@ -17,8 +17,6 @@ spec:
       containers:
       - name: mongodb
         image: "{{ .Values.mongo.image }}"
-        strategy:
-          type: recreate
         volumeMounts:
         - mountPath: /data/db
           name: mongo-data
