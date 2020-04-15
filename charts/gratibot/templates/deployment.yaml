@@ -35,12 +35,12 @@ spec:
               secretKeyRef:
                 name: gratibot
                 key: clientId
-          - name: clientsecret
+          - name: clientSecret
             valueFrom:
               secretKeyRef:
                 name: gratibot
                 key: clientsecret
-          - name: signingsecret
+          - name: clientSigningSecret
             valueFrom:
               secretKeyRef:
                 name: gratibot
