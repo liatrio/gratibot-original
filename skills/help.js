@@ -2,8 +2,10 @@
 Module for defining help command for Gratibot.
 */
 module.exports = function helper(controller, context) {
+  console.log('START HELP FEATURE');
   const { emoji } = context;
   controller.hears(['help'], 'direct_message, direct_mention', (bot, message) => {
+    console.log('HELP FEATURE');
     bot.whisper(message, {
       blocks: [
         {
