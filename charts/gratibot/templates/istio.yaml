@@ -13,7 +13,7 @@ spec:
       number: 80
       protocol: HTTP
     tls:
-      httpsRedirect: true
+      httpsRedirect: false
   - hosts:
     - {{ .Chart.Name }}.{{ .Values.istioDomain }}
     port:
