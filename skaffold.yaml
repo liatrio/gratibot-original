@@ -18,5 +18,5 @@ deploy:
       values:
         gratibot.image: gratibot
       setValueTemplates:
-        istioDomain: "{{.ISTIO_DOMAIN}}"
+        slackAuthUrl: "{{.SLACK_AUTH_URL}}"
         mongodbUri: "gratibot-db/gratibot"
