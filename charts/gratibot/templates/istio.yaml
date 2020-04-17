@@ -7,15 +7,15 @@ spec:
     istio: ingressgateway
   servers:
   - hosts:
-    - {{ .Chart.Name }}.{{ .Values.istioDomain }}
+    - gratibot.{{ .Values.domain }}
     port:
       name: http
       number: 80
       protocol: HTTP
     tls:
-      httpsRedirect: true
+      httpsRedirect: false
   - hosts:
-    - {{ .Chart.Name }}.{{ .Values.istioDomain }}
+    - gratibot.{{ .Values.domain }}
     port:
       name: https-default
       number: 443
@@ -32,7 +32,7 @@ metadata:
   name: "{{ .Chart.Name }}"
 spec:
   hosts:
-  - {{ .Chart.Name }}.{{ .Values.istioDomain }}
+  - gratibot.{{ .Values.domain }}
   gateways:
   - "{{ .Chart.Name }}-gateway"
   http:

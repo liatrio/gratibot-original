@@ -25,15 +25,15 @@ pipeline {
         branch 'master'
       }
       environment {
-        TILLER_NAMESPACE      = "${env.stagingNamespace}"
-        ISTIO_DOMAIN          = "${env.stagingDomain}"
+        NAMESPACE = "${env.stagingNamespace}"
+        DOMAIN    = "${env.stagingDomain}"
       }
       steps {
         container('skaffold') {
           unstash 'build'
-          sh "skaffold deploy -a image.json -n ${TILLER_NAMESPACE}"
+          sh "skaffold deploy -a image.json -n ${NAMESPACE}"
         }
-        stageMessage "Successfully deployed to staging:\ngratibot.${env.stagingDomain}"
+        stageMessage "Successfully deployed to staging: `gratibot.${env.stagingDomain}`"
       }
     }
     stage ('Manual Ready Check') {
@@ -61,15 +61,15 @@ pipeline {
         label "lead-toolchain-skaffold"
       }
       environment {
-        TILLER_NAMESPACE = "${env.productionNamespace}"
-        ISTIO_DOMAIN   = "${env.productionDomain}"
+        NAMESPACE = "${env.productionNamespace}"
+        DOMAIN    = "${env.productionDomain}"
       }
       steps {
         container('skaffold') {
           unstash 'build'
-          sh "skaffold deploy -a image.json -n ${TILLER_NAMESPACE}"
+          sh "skaffold deploy -a image.json -n ${NAMESPACE}"
         }
-        stageMessage "Successfully deployed to production:\ngratibot.${env.productionNamespace}/"
+        stageMessage "Successfully deployed to production: `gratibot.${env.productionDomain}`"
       }
     }
   }
