@@ -11,10 +11,9 @@ test:
 deploy:
   helm:
     flags:
-      upgrade: ["--timeout", "600", "--namespace", "toolchain"]
-      install: ["--timeout", "600", "--namespace", "toolchain"]
     releases:
     - name: gratibot
+      namespace: toolchain
       chartPath: charts/gratibot
       values:
         gratibot.image: gratibot
