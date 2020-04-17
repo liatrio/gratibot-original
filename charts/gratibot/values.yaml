@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-slackAuthUrl:
+domain:
 
 gratibot:
   image: docker.artifactory.liatr.io/liatrio/gratibot:latest

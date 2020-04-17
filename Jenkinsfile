@@ -25,8 +25,8 @@ pipeline {
         branch 'master'
       }
       environment {
-        NAMESPACE      = "${env.stagingNamespace}"
-        SLACK_AUTH_URL = "http://gratibot.${env.stagingDomain}/oauth"
+        NAMESPACE = "${env.stagingNamespace}"
+        DOMAIN    = "${env.stagingDomain}"
       }
       steps {
         container('skaffold') {
@@ -61,8 +61,8 @@ pipeline {
         label "lead-toolchain-skaffold"
       }
       environment {
-        NAMESPACE      = "${env.productionNamespace}"
-        SLACK_AUTH_URL = "http://gratibot.${env.productionDomain}/oauth"
+        NAMESPACE = "${env.productionNamespace}"
+        DOMAIN    = "${env.productionDomain}"
       }
       steps {
         container('skaffold') {

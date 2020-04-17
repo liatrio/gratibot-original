@@ -27,7 +27,7 @@ spec:
             cpu: "500m" 
         env:
           - name: botHostname
-            value: "{{ .Values.slackAuthUrl }}"
+            value: "http://gratibot.{{ .Values.domain }}/oauth"
           - name: mongodbUri
             value: "{{ .Values.mongodbUri }}" 
           - name: clientId
