@@ -24,7 +24,7 @@ spec:
   ports:
     - port: 27017
       targetPort: 27017
-      name: db
+      name: http
   selector:
       app: gratibot-db
 
