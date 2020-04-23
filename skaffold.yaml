@@ -20,3 +20,14 @@ deploy:
       setValueTemplates:
         domain: "{{.DOMAIN}}"
         mongodbUri: "gratibot-db/gratibot"
+profiles:
+  - name: local
+    activation:
+      - kubeContext: docker-desktop
+    patches:
+      - op: add
+        path: /deploy/helm/releases/0/setValueTemplates/storageClassName
+        value: hostpath
+      - op: add
+        path: /deploy/helm/releases/0/setValueTemplates/istio.enabled
+        value: false
