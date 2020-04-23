@@ -4,6 +4,9 @@
 
 domain:
 
+istio:
+  enabled: true
+
 gratibot:
   image: docker.artifactory.liatr.io/liatrio/gratibot:latest
 
