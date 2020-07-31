@@ -129,7 +129,6 @@ const addContentUsersContext = (state) => {
   const userToScoreBlock = (user, index) => ({
     type: 'context',
     elements: [
-      { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
       { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${Math.round(user.score * 100) / 100}\n` },
     ],
   });
