@@ -266,7 +266,6 @@ module.exports = function helper(controller, context) {
       service, bot, message, content, dateRange: 30,
     })
       .then(getLeaderboard)
-      .then(getUserIcons)
       .then(addContentHeading)
     // These are alternative layouts for the user list. I am leaving them here
     // intentionally in case we decide to use them later
@@ -294,7 +293,6 @@ module.exports = function helper(controller, context) {
       service, bot, message, content, dateRange: message.actions[0].value,
     })
       .then(getLeaderboard)
-      .then(getUserIcons)
       .then(addContentHeading)
     // These are alternative layouts for the user list. I am leaving them here
     // intentionally in case we decide to use them later
