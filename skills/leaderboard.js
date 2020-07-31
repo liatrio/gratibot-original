@@ -129,7 +129,6 @@ const addContentUsersContext = (state) => {
   const userToScoreBlock = (user, index) => ({
     type: 'context',
     elements: [
-      { type: 'image', image_url: state.icons[user.userID], alt_text: `<@${user.userID}>` },
       { type: 'mrkdwn', text: `<@${user.userID}> *${rank[index]} - Score:* ${Math.round(user.score * 100) / 100}\n` },
     ],
   });
@@ -267,7 +266,6 @@ module.exports = function helper(controller, context) {
       service, bot, message, content, dateRange: 30,
     })
       .then(getLeaderboard)
-      .then(getUserIcons)
       .then(addContentHeading)
     // These are alternative layouts for the user list. I am leaving them here
     // intentionally in case we decide to use them later
@@ -295,7 +293,6 @@ module.exports = function helper(controller, context) {
       service, bot, message, content, dateRange: message.actions[0].value,
     })
       .then(getLeaderboard)
-      .then(getUserIcons)
       .then(addContentHeading)
     // These are alternative layouts for the user list. I am leaving them here
     // intentionally in case we decide to use them later
