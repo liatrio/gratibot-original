@@ -3,7 +3,7 @@ kind: Component
 metadata:
   annotations:
     github.com/project-slug: liatrio/gratibot
-    backstage.io/techdocs-ref: dir: ./
+    backstage.io/techdocs-ref: ./
   name: gratibot
   description: Slackbot used to encourage recognition of team accomplishments
   tags:
