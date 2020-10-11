@@ -1,4 +1,5 @@
 site_name: 'gratibot-docs'
+site_description: 'Main documentation for Gratibot use and features'
 
 nav:
   - Home: index.md
