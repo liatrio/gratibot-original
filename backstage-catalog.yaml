@@ -3,7 +3,6 @@ kind: Component
 metadata:
   name: gratibot
   description: Slackbot used to encourage recognition of team accomplishments
-  annotations:
   tags:
     - javascript
     - botkit
