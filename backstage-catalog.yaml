@@ -11,4 +11,4 @@ metadata:
 spec:
   type: chatbot
   lifecycle: production
-  owner: liatrio.com
+  owner: guest
