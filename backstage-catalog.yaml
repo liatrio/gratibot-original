@@ -1,6 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
+  annotations:
+    github.com/project-slug: liatrio/gratibot
   name: gratibot
   description: Slackbot used to encourage recognition of team accomplishments
   tags:
